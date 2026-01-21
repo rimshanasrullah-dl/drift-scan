@@ -1,46 +1,55 @@
 {
   "images" : [
     {
+      "filename" : "Drift - AppIcon 3.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "20x20"
     },
     {
+      "filename" : "Drift - AppIcon 4.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "20x20"
     },
     {
+      "filename" : "Drift - AppIcon 3 (1).png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
+      "filename" : "Drift - AppIcon 4 (1).png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "29x29"
     },
     {
+      "filename" : "Drift - AppIcon 3 (2).png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "40x40"
     },
     {
+      "filename" : "Drift - AppIcon 4 (2).png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
+      "filename" : "Drift - AppIcon 4 (2) 1.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
+      "filename" : "Drift - AppIcon 4 (3).png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "60x60"
     },
     {
+      "filename" : "Drift - AppIcon 3 (3).png",
       "idiom" : "ios-marketing",
       "scale" : "1x",
       "size" : "1024x1024"

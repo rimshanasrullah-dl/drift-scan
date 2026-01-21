@@ -1,0 +1,16 @@
+
+const AppColors = {
+  THEME_GREEN:'#173E20',
+  THEME_BEIGE:'#C2A15A',
+  DARK_GREEN: '#144D33',
+  BEIGE: '#C2A15A',
+  LIGHT_BEIGE: '#f7f3e9',
+  PRIMARY_TEXT: '#2C2C2E',
+  SECONDARY_TEXT: '#4C4D51',
+  MEDIUM_GRAY: '#888888',
+  LIGHT_GRAY: '#999999',
+  BORDER_LIGHT: '#EEEEEE',
+  ALERT_RED: '#FF0000',
+};
+
+export default AppColors;
