@@ -23,6 +23,8 @@ import DeleteAccount from './app/screens/Home/DeleteAccount';
 import SlotDetailScreen from './app/screens/Home/SlotDetailScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ScanScreen from './app/screens/Home/ScanScreen';
+import BootSplash from "react-native-bootsplash";
+
 
 
 
@@ -85,7 +87,7 @@ export const RootNavigator = () => {
         backgroundColor="transparent" 
         barStyle="dark-content" 
       />
-    <NavigationContainer>
+    <NavigationContainer onReady={() => BootSplash.hide({ fade: true })}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken == null ? (
           // Case 1: Not Logged In -> Render Auth Wrapper

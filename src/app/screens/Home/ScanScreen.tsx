@@ -13,6 +13,7 @@ import ScreenWrapper from '../../components/HomeComponents/ScreenWrapper';
 import AppColors from '../../../share/constants/AppColors';
 import AppFonts from '../../../share/constants/AppFonts';
 import Svg, { Path } from 'react-native-svg';
+import HeaderContent from '../../components/HomeComponents/DeleteAccComponents/HeaderContent';
 
 const ScanScreen = ({ navigation }: any) => {
   const device = useCameraDevice('back');
@@ -79,14 +80,7 @@ const ScanScreen = ({ navigation }: any) => {
 
 
 
-  const HeaderContent = (
-    <View style={styles.headerRow}>
-      <TouchableOpacity onPress={() => navigation.goBack()} >
-        <BackBtnSvg />
-      </TouchableOpacity>
-      <Text numberOfLines={1} style={styles.headerTitle}>{'The Fancy Delight'}</Text>
-    </View>
-  );
+  
 
   if (!hasPermission) return <View style={styles.center}><Text style={styles.instructionText}>No Camera Permission</Text></View>;
   if (device == null) {
@@ -98,7 +92,7 @@ const ScanScreen = ({ navigation }: any) => {
   }
 
   return (
-    <ScreenWrapper headerContent={HeaderContent}>
+    <ScreenWrapper headerContent={<HeaderContent headerTitle='The Fancy Delight'/>}>
       <View style={styles.whiteBackground}>
         {isProcessing?.current ?
           <View style={[styles.scanFrameContainer, { gap: 50 }]}>

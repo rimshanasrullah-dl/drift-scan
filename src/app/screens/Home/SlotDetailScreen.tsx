@@ -1,22 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text,} from 'react-native';
 import ScreenWrapper from '../../components/HomeComponents/ScreenWrapper';
 import { DSButton } from '../../components/baseComponents';
 import { ValidIllustration } from '../../assets/svgs';
 import { styles } from '../../components/HomeComponents/SlotDetailsComponents/SlotDetailScreenStyles';
 import DetailRow from '../../components/HomeComponents/SlotDetailsComponents/DetailRow';
+import HeaderContent from '../../components/HomeComponents/DeleteAccComponents/HeaderContent';
 
 
 const SlotDetailScreen = ({ navigation }: any) => {
   
-    const HeaderContent = (
-        <View style={styles.headerContent}>
-            <Text style={styles.headerTitle}>The Fancy Delight</Text>
-        </View>
-    );
-
+ 
     return (
-        <ScreenWrapper headerContent={HeaderContent}>
+        <ScreenWrapper  headerContent={<HeaderContent headerTitle={'The Fancy Delight'} showBackButton={false}/>}>
             <View style={styles.scrollContent} >
                 
                 <View style={styles.statusCard}>

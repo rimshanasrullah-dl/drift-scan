@@ -76,19 +76,23 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
 
-  const scanPress = async () => {
-    
-    const permissionResult: any = await requestPermission();
+  const scanPress =  () => {
 
 
-    if (permissionResult.granted || permissionResult.status === 'granted'||permissionResult == true||hasPermission) {
+    let permissionResult: any
+
+    if (!hasPermission) {
+      permissionResult =  requestPermission()
+    }
+
+    if (permissionResult?.granted || permissionResult?.status === 'granted' || permissionResult == true || hasPermission) {
       navigation.navigate("ScanScreen");
       return;
     }
     if (!hasPermission && (!permissionResult.granted || permissionResult.status !== 'granted' || permissionResult == false))
       setPermissionModalVisible(true)
   };
-  
+
 
   return (
     <>
@@ -143,17 +147,16 @@ const HomeScreen = ({ navigation }: any) => {
         ref={sheetRef}
         title="Release Slot Confirmation"
         subtitle="Are you sure you want to release this slot?"
-        // subtitle={selectedItem 
-        //    ? `Are you sure you want to release the slot for ${selectedItem.name}?` 
-        //    : "Are you sure you want to release this slot?"
-        // }
         confirmText="Yes, Release"
         cancelText="Cancel"
         onConfirm={handleConfirmRelease}
       />
       <PermissionModal
         visible={permissionModalVisible}
-        onOpenSettings={() => Linking.openSettings()}
+        onOpenSettings={() => {
+          Linking.openSettings()
+          setPermissionModalVisible(false)
+        }}
         onDeny={() => setPermissionModalVisible(false)}
       />
     </>

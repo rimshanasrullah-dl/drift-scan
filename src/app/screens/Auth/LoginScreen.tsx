@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { emailRegex, validateLoginFields } from '../../../share/core/Validators';
 import AuthLayout from '../../components/AuthComponents/AuthLayout';
@@ -9,29 +9,60 @@ import AppColors from '../../../share/constants/AppColors';
 import AppFonts from '../../../share/constants/AppFonts';
 import PrivacyView from '../../components/AuthComponents/PrivacyView';
 import { AuthContext } from '../../../share/features/context/AuthContext';
+import { clearUser, getUserSecurely, saveUserSecurely } from '../../../share/utility/KeyValueStorage';
 
 const LoginScreen = ({ navigation }: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [userDetails, setUserDetails] = useState({ email: '', password: '' });
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState<any>({
-    emailErr: '',
-    passErr: ''
-  });
- const { isLoading, login } = useContext(AuthContext);
+  const [error, setError] = useState<any>({ emailErr: '', passErr: ''});
+  const { isLoading, login } = useContext(AuthContext);
 
-  const handleLogin = () => {
+   useEffect(() => {
+   loadRememberedUser()
+ }, []);
 
-    // const { valid, emailErr, passErr } = validateLoginFields(email, password);
-   
+  const handleUserInput = (val: any, type: string) => {
+    setUserDetails((prev) => ({
+      ...prev,
+      [type]: val
+    }));
+
+    if (type === 'email') {
+      setError((prev: any) => ({ ...prev, emailErr: '' }));
+    } else if (type === 'password') {
+      setError((prev: any) => ({ ...prev, passErr: '' }));
+    }
+  };
+
+  const loadRememberedUser = async () => {
+    try {
+      const savedUser = await getUserSecurely()
+      // console.log("rememUser==", savedUser)
+      if (savedUser) {
+        setUserDetails({ email: savedUser.email, password: savedUser.password })
+        setRememberMe(true);
+      }
+    } catch (err) {
+      console.log("Error loading remembered user", err);
+    }
+  }
+  const handleLogin = async () => {
+
+    // const { valid, emailErr, passErr } =validateLoginFields(userDetails.email, userDetails.password);
+
     // if (!valid) {
     //   setError({ ...error, emailErr: emailErr, passErr: passErr });
     //   return;
     // }
 
+    if (rememberMe) {
+       saveUserSecurely(userDetails)
+    } else {
+       clearUser()
+    }
+
     login()
     // navigation.navigate("EmailVerification")
-    console.log('Login Success');
   };
 
   return (
@@ -42,31 +73,22 @@ const LoginScreen = ({ navigation }: any) => {
     >
 
       <DSInput
-        label=""
+
         placeholder="Email Address"
         iconName={<EmailSvg />}
-        value={email}
-        onChangeText={(text) => {
-          setError({ ...error, emailErr: '' })
-          setEmail(text)
-        }}
-        style={styles.whiteInput} // Override grey bg
+        value={userDetails.email}
+        onChangeText={(text: any) => handleUserInput(text, 'email')}
         error={error.emailErr}
         autoCapitalize='none'
       />
 
       <DSInput
-        label=""
+
         placeholder="Password"
         iconName={<PasswordSvg />}
         password
-        value={password}
-        onChangeText={(text) => {
-          setError({ ...error, passErr: '' })
-          setPassword(text)
-        }}
-
-        style={styles.whiteInput}
+        value={userDetails.password}
+        onChangeText={(text: any) => handleUserInput(text, 'password')}
         error={error.passErr}
       />
 

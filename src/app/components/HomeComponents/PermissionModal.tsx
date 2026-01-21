@@ -8,44 +8,44 @@ interface PermissionModalProps {
   onDeny: () => void;
 }
 
-export const PermissionModal = ({ 
-  visible, 
-  onOpenSettings, 
-  onDeny 
+export const PermissionModal = ({
+  visible,
+  onOpenSettings,
+  onDeny
 }: PermissionModalProps) => {
   return (
     <Modal
       transparent={true}
       visible={visible}
       animationType="fade"
-        statusBarTranslucent={true}
-      onRequestClose={onDeny} // Android back button handle
+      statusBarTranslucent={true}
+      onRequestClose={onDeny}
     >
-       <TouchableWithoutFeedback style={{flex:1, }} onPress={onDeny}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text style={styles.title}>Camera Permission Needed</Text>
-          <Text style={styles.message}>
-          We need camera access to scan codes.Please enable it in your phone settings
-          </Text>
+      <TouchableWithoutFeedback style={{ flex: 1, }} onPress={onDeny}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.title}>Camera Permission Needed</Text>
+            <Text style={styles.message}>
+              Drift Scan needs camera access to scan QR codes. Please enable it in your phone settings
+            </Text>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity 
-              style={[styles.button, styles.denyButton]} 
-              onPress={onDeny}
-            >
-              <Text style={styles.denyText}>Don't Use</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.denyButton]}
+                onPress={onDeny}
+              >
+                <Text style={styles.denyText}>Don't Use</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={[styles.button, styles.allowButton]} 
-              onPress={onOpenSettings}
-            >
-              <Text style={styles.allowText}>Go to Settings</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.allowButton]}
+                onPress={onOpenSettings}
+              >
+                <Text style={styles.allowText}>Go to Settings</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
       </TouchableWithoutFeedback>
     </Modal>
   );
@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     // backgroundColor:'red',
-    overflow:'hidden',
-     backgroundColor: 'rgba(0,0,0,0.5)',
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalView: {
     width: Dimensions.get('window').width * 0.85,

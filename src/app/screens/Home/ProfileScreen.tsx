@@ -18,6 +18,7 @@ import { DSButton, DSInput } from '../../components/baseComponents';
 import AppColors from '../../../share/constants/AppColors';
 import DSBottomSheet from '../../components/baseComponents/DSBottomSheet';
 import { AuthContext } from '../../../share/features/context/AuthContext';
+import HeaderContent from '../../components/HomeComponents/DeleteAccComponents/HeaderContent';
 
 const ProfileScreen = ({ navigation }: any) => {
     const { logout } = useContext(AuthContext);
@@ -47,19 +48,11 @@ const ProfileScreen = ({ navigation }: any) => {
         });
         return () => hideListener.remove();
     }, []);
-    const HeaderContent = (
-        <View style={styles.headerRow}>
-            <TouchableOpacity onPress={() => navigation.goBack()} >
-                <BackBtnSvg />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Profile</Text>
-
-        </View>
-    );
+   
 
     return (
         <>
-            <ScreenWrapper headerContent={HeaderContent}>
+            <ScreenWrapper  headerContent={<HeaderContent headerTitle={'Profile'}/>}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={{ flex: 1 }}
@@ -307,7 +300,7 @@ const styles = StyleSheet.create({
 
     // --- Delete Account Card ---
     actionCard: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#fff',
         borderRadius: 15,
         padding: 20,
         marginTop: 20,
@@ -322,6 +315,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 6,
+        elevation:6,
     },
     actionText: {
         fontSize: 14,

@@ -81,17 +81,7 @@ const DSBottomSheet = forwardRef<BottomSheet, DSBottomSheetProps>(({
                     </Text>
                 </View>
                 <SafeAreaView style={styles.buttonRow}>
-                    {/* 3. Action Buttons */}
-
-                    {/* Confirm Button*/}
-
-                    <DSButton
-                        label="Yes, Sure"
-                        variant="filled"
-                        onPress={onConfirm}
-                        style={styles.filledButton}
-                    />
-
+                  
                     {/* Cancel Button */}
                     <DSButton
                         label="Cancel"
@@ -99,6 +89,15 @@ const DSBottomSheet = forwardRef<BottomSheet, DSBottomSheetProps>(({
                         onPress={handleClose}
                         style={styles.filledButton}
                     />
+                    {/* Confirm Button*/}
+                    <DSButton
+                        label="Yes, Sure"
+                        variant="filled"
+                        onPress={onConfirm}
+                        style={styles.filledButton}
+                    />
+
+
 
                 </SafeAreaView>
 
