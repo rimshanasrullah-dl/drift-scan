@@ -88,6 +88,7 @@ const HomeScreen = ({ navigation }: any) => {
     if (!hasPermission && (!permissionResult.granted || permissionResult.status !== 'granted' || permissionResult == false))
       setPermissionModalVisible(true)
   };
+  
 
   return (
     <>
