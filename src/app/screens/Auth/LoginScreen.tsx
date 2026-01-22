@@ -9,17 +9,20 @@ import AppColors from '../../../share/constants/AppColors';
 import AppFonts from '../../../share/constants/AppFonts';
 import PrivacyView from '../../components/AuthComponents/PrivacyView';
 import { AuthContext } from '../../../share/features/context/AuthContext';
-import { clearUser, getUserSecurely, saveUserSecurely } from '../../../share/utility/KeyValueStorage';
+import { _saveItem, clearUser, getUserSecurely, saveUserSecurely } from '../../../share/utility/KeyValueStorage';
+import { api } from '../../../share/core/api';
+import { useAuthCheck } from '../../../share/hooks/useAuthCheck';
 
 const LoginScreen = ({ navigation }: any) => {
   const [userDetails, setUserDetails] = useState({ email: '', password: '' });
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState<any>({ emailErr: '', passErr: ''});
+  const [error, setError] = useState<any>({ emailErr: '', passErr: '' });
   const { isLoading, login } = useContext(AuthContext);
-
-   useEffect(() => {
-   loadRememberedUser()
- }, []);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const { loadProfile } = useAuthCheck();
+  useEffect(() => {
+    loadRememberedUser()
+  }, []);
 
   const handleUserInput = (val: any, type: string) => {
     setUserDetails((prev) => ({
@@ -46,23 +49,74 @@ const LoginScreen = ({ navigation }: any) => {
       console.log("Error loading remembered user", err);
     }
   }
+
+  const LoginFun = async () => {
+    setBtnLoading(true)
+
+    const payload = {
+      "email": userDetails.email,
+      "password": userDetails.password,
+      "role": "parking",
+
+    }
+    try {
+      let response: any = await await api.post('/customer-login', payload);
+      let obj = {
+        content: response?.content,
+        user: response?.user
+      }
+      if (!response?.user?.email_verified_at) {
+        let data = {
+          token: response?.content?.token,
+          customer_details: response?.user
+        }
+        let obj = {
+          ...userDetails,
+          rememberMe: rememberMe
+        }
+        navigation.navigate('EmailVerification', { data: data, userDetails: obj })
+      }
+
+      else {
+
+        if (rememberMe) {
+          await saveUserSecurely(userDetails)
+        } else {
+          await clearUser()
+        }
+        await loadProfile(response?.content?.token, obj)
+        login(response?.content?.token)
+          await _saveItem("userData", response)
+
+        setUserDetails({ email: '', password: '' })
+
+      }
+    } catch (e: any) {
+      if (e?.messages) {
+        const emailError = Array.isArray(e?.messages?.email) ? e?.messages?.email[0] : e?.messages?.email;
+        let passError = Array.isArray(e?.messages?.password) ? e?.messages?.password[0] : e?.messages?.password;
+        let genErr = e?.messages
+        setError({ ...error, emailErr: emailError, passErr: passError || genErr });
+      } else {
+        console.log("Error", e.message)
+        setError({ ...error, passErr: e.message });
+      }
+    } finally {
+      setBtnLoading(false);
+    }
+  };
+
+
   const handleLogin = async () => {
 
-    // const { valid, emailErr, passErr } =validateLoginFields(userDetails.email, userDetails.password);
+    const { valid, emailErr, passErr } = validateLoginFields(userDetails.email, userDetails.password);
 
-    // if (!valid) {
-    //   setError({ ...error, emailErr: emailErr, passErr: passErr });
-    //   return;
-    // }
-
-    if (rememberMe) {
-       saveUserSecurely(userDetails)
-    } else {
-       clearUser()
+    if (!valid) {
+      setError({ ...error, emailErr: emailErr, passErr: passErr });
+      return;
     }
+    LoginFun()
 
-    login()
-    // navigation.navigate("EmailVerification")
   };
 
   return (
@@ -119,6 +173,7 @@ const LoginScreen = ({ navigation }: any) => {
         variant="filled"
         onPress={handleLogin}
         style={{ marginTop: 20 }}
+        loading={isLoading || btnLoading}
       />
 
 

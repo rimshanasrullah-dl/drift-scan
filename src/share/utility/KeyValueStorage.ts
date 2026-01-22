@@ -17,7 +17,7 @@ export const _saveItem = (key:string, value?:any) => {
     if (!value) return _removeItem(key);
 
     const jsonValue = JSON.stringify(value);
-
+ console.log("value in saving data ",value);
     storage.set(key, jsonValue);
   } catch (error) {
     console.log("error in saving data ",error);

@@ -4,30 +4,86 @@ import { validatePasswordAndConfirm } from '../../../share/core/Validators';
 import AuthLayout from '../../components/AuthComponents/AuthLayout';
 import { DSButton, DSInput } from '../../components/baseComponents';
 import { PasswordSvg } from '../../assets/svgs';
+import { api } from '../../../share/core/api';
+import Toast from 'react-native-toast-message';
 
-const ResetPasswordScreen = ({ navigation }: any) => {
+const ResetPasswordScreen = ({ navigation, route }: any) => {
+  const params = route?.params?.data
+  const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState({ pass: '', confirm: '' });
+  const [error, setError] = useState({
+    passErr: '',
+    confirmPassErr: '',
+    genErr: ''
+  });
 
-  const handleReset = () => {
-    const { isValid, passErr, confirmPassErr } = validatePasswordAndConfirm(
-      password,
-      confirmPassword,
-      false // regForm=false means it says "new password"
-    );
+  const resetPasswordApi = async () => {
+    try {
+      const payload = {
+        "email": params?.email,
+        "password": password,
+        "password_confirmation": confirmPassword,
+        "token": params?.token
+      }
 
-    if (!isValid) {
-      setErrors({ pass: passErr, confirm: confirmPassErr });
+
+      setLoading(true);
+
+
+      const response: any = await api.post("/customer-reset-password", payload, { requiresAuth: false });
+      if (response) {
+        Toast.show({
+          type: 'success',
+          text1: 'Password reset successfully',
+        });
+
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        })
+      }
+
+
+      return response;
+    } catch (error: any) {
+
+
+      setError({
+        ...error,
+        genErr: error?.message,
+
+
+      });
+      console.log("Catch Error in resetting password", error)
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const ResetPassword = () => {
+    const result = validatePasswordAndConfirm(password, confirmPassword);
+    console.log("reset params", params)
+
+
+    setError({
+      ...error,
+      passErr: result.passErr,
+      confirmPassErr: result.confirmPassErr
+    });
+
+
+    if (!result.isValid) {
       return;
     }
+    resetPasswordApi()
 
-    // Success
-    setErrors({ pass: '', confirm: '' });
-    Alert.alert('Success', 'Password reset successfully', [
-      { text: 'Login', onPress: () => navigation.popToTop() }
-    ]);
-  };
+
+  }
+
+ 
 
   return (
     <AuthLayout
@@ -37,39 +93,43 @@ const ResetPasswordScreen = ({ navigation }: any) => {
       onBackPress={() => navigation.goBack()}
     >
       <DSInput
-        
+
         placeholder="Password"
-        iconName={<PasswordSvg/>}
+        iconName={<PasswordSvg />}
         password
         value={password}
-        onChangeText={(t) => {
-             setPassword(t); 
-             if(errors.pass) setErrors(e => ({...e, pass: ''}));
+        onChangeText={(text: any) => {
+          setError({ ...error, passErr: '' })
+          setPassword(text)
         }}
-        error={errors.pass}
+        error={error.passErr}
         style={{ backgroundColor: '#FFF' }}
       />
 
       <DSInput
-       
+
         placeholder="Confirm Password"
-        iconName={<PasswordSvg/>}
+        iconName={<PasswordSvg />}
         password
         value={confirmPassword}
-        onChangeText={(t) => {
-            setConfirmPassword(t);
-            if(errors.confirm) setErrors(e => ({...e, confirm: ''}));
+        onChangeText={(text: any) => {
+          setError({ ...error, confirmPassErr: '' })
+          setConfirmPassword(text)
         }}
-        error={errors.confirm}
+        error={error.confirmPassErr}
+
         style={{ backgroundColor: '#FFF' }}
       />
 
       <DSButton
         label="Reset Password"
         variant="filled"
-        onPress={handleReset}
+        onPress={ResetPassword}
         style={{ marginTop: 20 }}
       />
+
+      {error?.genErr ? <Text style={{ fontSize: 12, color: 'red', textAlign: 'center', marginTop: 8 }}>{error?.genErr}</Text> : <></>}
+
     </AuthLayout>
   );
 };

@@ -90,10 +90,8 @@ export const RootNavigator = () => {
     <NavigationContainer onReady={() => BootSplash.hide({ fade: true })}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken == null ? (
-          // Case 1: Not Logged In -> Render Auth Wrapper
           <Stack.Screen name="Auth" component={AuthNavigator} />
         ) : (
-          // Case 2: Logged In -> Render Home Wrapper
           <Stack.Screen name="HomeStack" component={HomeNavigator} />
         )}
       </Stack.Navigator>

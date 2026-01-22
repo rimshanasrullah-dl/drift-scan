@@ -1,9 +1,11 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { _removeItem } from '../../utility/KeyValueStorage';
+import { useUser } from './UserContext';
 
 type AuthContextType = {
   isLoading: boolean;
   userToken: string | null;
-  login: () => Promise<void>;
+  login: (val:string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -18,12 +20,11 @@ type AuthProviderProps = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [userToken, setUserToken] = useState<string | null>(null);
+  const { userDetail, setUserDetail, fetchUserDetail }: any = useUser();
 
   const isLoggedIn = async () => {
     try {
       setIsLoading(true);
-    //   let storedToken = await AsyncStorage.getItem('userToken');
-      // setUserToken('storedToken');
       setUserToken(userToken);
       setIsLoading(false);
     } catch (e) {
@@ -36,16 +37,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isLoggedIn();
   }, []);
 
-  const login = async () => {
+  const login = async (token:string) => {
     setIsLoading(true);
-    // await AsyncStorage.setItem('userToken', token);
-    setUserToken('storedToken');
+    setUserToken(token);
     setIsLoading(false);
   };
 
   const logout = async () => {
     setIsLoading(true);
-    // await AsyncStorage.removeItem('userToken');
+    await _removeItem('userData');
+    setUserDetail(null)
     setUserToken(null);
     setIsLoading(false);
   };

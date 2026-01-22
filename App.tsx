@@ -1,16 +1,31 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, } from 'react-native'
 import React from 'react'
 import { RootNavigator } from './src/index'
-import { AuthProvider } from './src/share/features/context/AuthContext';
-import { NetworkProvider } from './src/share/features/context/NetworkProvider';
+import AppProviders from './src/share/core/AppProvider';
+import Toast from 'react-native-toast-message';
+import { toastConfig, visibilityTime } from './src/share/utility/ToastConfig';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-const App = () => {
+const AppContent = () => {
+  const insets = useSafeAreaInsets();
+  const toastTopOffset = insets.top + 15;
+
   return (
-    <NetworkProvider>
-    <AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <RootNavigator />
-    </AuthProvider>
-    </NetworkProvider>
+      <Toast config={toastConfig} visibilityTime={visibilityTime} topOffset={toastTopOffset} />
+    </GestureHandlerRootView>
+  );
+};
+const App = () => {
+
+  return (
+    <AppProviders>
+      <SafeAreaProvider>
+        <AppContent />
+      </SafeAreaProvider>
+    </AppProviders>
   );
 }
 

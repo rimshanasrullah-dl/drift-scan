@@ -63,7 +63,7 @@ const DSInput: React.FC<InputProps> = ({
           placeholder={props.placeholder}
           value={props.value}
           onChangeText={props.onChangeText}
-          style={styles.textInput}
+          style={[styles.textInput,{ color:editable==false?'#959596':'#2c2c2c'}]}
           autoCapitalize={props.autoCapitalize}
           keyboardType={props?.keyboardType ||'default'}
           editable={editable?editable:true}
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     height: '98%',
-    color: '#2c2c2c',
+    // color: editable==false?'#959596':'#2c2c2c',
     fontFamily: AppFonts.Regular,
     fontSize: 14,
     paddingVertical: 0, 

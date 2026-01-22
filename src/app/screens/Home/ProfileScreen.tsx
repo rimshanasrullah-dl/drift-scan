@@ -9,7 +9,8 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
-    Keyboard
+    Keyboard,
+    Alert
 } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { BackBtnSvg, EmailSvg, LeftArrowSvg, PasswordSvg, Verified } from '../../assets/svgs';
@@ -19,16 +20,23 @@ import AppColors from '../../../share/constants/AppColors';
 import DSBottomSheet from '../../components/baseComponents/DSBottomSheet';
 import { AuthContext } from '../../../share/features/context/AuthContext';
 import HeaderContent from '../../components/HomeComponents/DeleteAccComponents/HeaderContent';
+import { useUser } from '../../../share/features/context/UserContext';
+import { validatePasswordAndConfirm } from '../../../share/core/Validators';
+import { api } from '../../../share/core/api';
+import Toast from 'react-native-toast-message';
 
 const ProfileScreen = ({ navigation }: any) => {
     const { logout } = useContext(AuthContext);
+    const { userDetail }: any = useUser();
+
     const scrollViewRef = useRef<ScrollView>(null);
+    const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
-    const [error, setError] = useState<any>({
-        emailErr: '',
-        passErr: ''
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState({
+        passErr: '',
+        confirmPassErr: ''
     });
 
 
@@ -48,11 +56,67 @@ const ProfileScreen = ({ navigation }: any) => {
         });
         return () => hideListener.remove();
     }, []);
-   
+
+
+    const resetPasswordApi = async () => {
+        try {
+            const payload = {
+
+                "password": password,
+                "password_confirm": confirmPassword,
+
+            }
+
+            setLoading(true);
+            const response: any = await api.post("/customer-update-password", payload, { requiresAuth: true });
+            //  Alert.alert("update-password" +JSON.stringify(response))
+          
+            if (response) {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Password updated successfully',
+                });
+
+                // navigation.goBack()
+            }
+
+            return response;
+        } catch (error: any) {
+
+            setError({
+                ...error,
+                genErr: error?.message,
+
+            });
+               Alert.alert("error-password" +JSON.stringify(error))
+            console.log("Catch Error in resetting password", error)
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const ResetPassword = () => {
+        const result = validatePasswordAndConfirm(password, confirmPassword);
+
+        setError({
+            ...error,
+            passErr: result.passErr,
+            confirmPassErr: result.confirmPassErr
+        });
+
+        if (!result.isValid) {
+            return;
+        }
+        resetPasswordApi()
+
+    }
+
+
 
     return (
         <>
-            <ScreenWrapper  headerContent={<HeaderContent headerTitle={'Profile'}/>}>
+            <ScreenWrapper headerContent={<HeaderContent headerTitle={'Profile'} />}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={{ flex: 1 }}
@@ -72,18 +136,20 @@ const ProfileScreen = ({ navigation }: any) => {
                             {/* User Info Header */}
                             <View style={styles.userInfoRow}>
                                 <Image
-                                     source={require('../../assets/pngs/avatar_placeholder.png')} 
+                                    source={require('../../assets/pngs/avatar_placeholder.png')}
                                     style={styles.avatar}
                                 />
                                 <View style={styles.userTextContainer}>
                                     <View style={styles.nameRow}>
-                                        <Text style={styles.userName}>John Doe</Text>
-                                        <View style={styles.verifiedBadge}>
-                                            <Verified />
-                                            <Text style={styles.verifiedText}>Verified</Text>
-                                        </View>
+                                        <Text style={styles.userName}>{userDetail?.name || 'User'}</Text>
+                                        {userDetail?.email_verified_at &&
+                                            <View style={styles.verifiedBadge}>
+                                                <Verified />
+                                                <Text style={styles.verifiedText}>Verified</Text>
+                                            </View>
+                                        }
                                     </View>
-                                    <Text style={styles.restaurantName}>The Fancy Delight</Text>
+                                    <Text style={styles.restaurantName}>{userDetail?.restaurant_name || 'restaurant name'}</Text>
                                 </View>
                             </View>
 
@@ -96,13 +162,7 @@ const ProfileScreen = ({ navigation }: any) => {
                                     label=""
                                     placeholder="Email Address"
                                     iconName={<EmailSvg />}
-                                    value={email}
-                                    onChangeText={(text) => {
-                                        setError({ ...error, emailErr: '' })
-                                        setEmail(text)
-                                    }}
-
-                                    error={error.emailErr}
+                                    value={userDetail?.email || email}
                                     autoCapitalize='none'
                                     editable={false}
                                 />
@@ -124,21 +184,20 @@ const ProfileScreen = ({ navigation }: any) => {
                                     placeholder=" Confirm Password"
                                     iconName={<PasswordSvg />}
                                     password
-                                    value={password}
-                                    onChangeText={(text) => {
-                                        setError({ ...error, passErr: '' })
-                                        setPassword(text)
-                                    }}
+                                    value={confirmPassword}
+                                    onChangeText={(text: any) => setConfirmPassword(text)}
+                                    error={error.confirmPassErr}
 
 
-                                    error={error.passErr}
                                 />
 
 
                                 <DSButton
                                     label="Save Changes"
                                     variant="filled"
-                                    onPress={() => console.log('Changes Saved')}
+                                    onPress={ResetPassword}
+                                    loading={loading}
+                                    disabled={!password || !confirmPassword}
 
                                 />
                             </View>
@@ -315,7 +374,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 6,
-        elevation:6,
+        elevation: 6,
     },
     actionText: {
         fontSize: 14,

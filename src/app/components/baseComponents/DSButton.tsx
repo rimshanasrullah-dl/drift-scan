@@ -56,19 +56,19 @@ const DSButton: React.FC<DSButtonProps> = ({
     <TouchableOpacity
       activeOpacity={0.8}
       disabled={disabled || loading}
-      style={[styles.button, containerStyle, style]} 
+      style={[styles.button, containerStyle, style,{backgroundColor:disabled?AppColors.THEME_GREEN:AppColors.THEME_GREEN, opacity:disabled?0.6:1}]} 
       {...props}>
       
    
       <View style={styles.iconContainer}>
         {loading ? (
-          <ActivityIndicator size="small" color={contentColor} />
+          <ActivityIndicator size="small" color={contentColor} style={{ marginRight: 10 }} />
         ) : (
-          icon && <View style={{ marginRight: 8 }}>{icon}</View>
+          icon && <View style={{ marginRight: 10}}>{icon}</View>
         )}
       </View>
 
-      <Text style={[styles.text, { color: contentColor }]}>{label}</Text>
+      <Text style={[styles.text, { color:disabled?'#FFF': contentColor }]}>{label}</Text>
     </TouchableOpacity>
   );
 };

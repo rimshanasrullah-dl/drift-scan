@@ -4,56 +4,39 @@ import { emailRegex } from '../../../share/core/Validators';
 import AuthLayout from '../../components/AuthComponents/AuthLayout';
 import { DSButton, DSInput } from '../../components/baseComponents';
 import { EmailSvg } from '../../assets/svgs';
+import { ForgetPasswordApi } from '../../../share/features/apis/ForgetPasswordApi';
 
 const ForgotPasswordScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
+      const [loading, setLoading] = useState<boolean>(false);
+  
 
-    //   const handleSubmit = () => {
-    //     let emailErr=''
-    //    if (!email?.trim()) {
-    //      emailErr = 'Email is required.';
-    //    } else {
-    //      if (!emailRegex.test(email)) {
-    //        emailErr = 'Enter a valid Email.';
-    //      }
-    //    }
-    //    if(emailErr){
-    //     setError(emailErr)
-    //     return
-    //    }
-    //     setError('')
-    //     // Alert.alert('Verification code has been sent', '', [
-    //     //     { text: 'OK', }
-    //     // ]);
-    // navigation.navigate('OTPScreen', { email:email })
-    //   };
-
-    const handleSubmit = async () => {
+     const onSubmit = async () => {
         let emailErr = ''
         if (!email?.trim()) {
             emailErr = 'Email is required.';
-            setError(emailErr)
+             setError(emailErr)
             return
         } else {
 
             if (!emailRegex.test(email)) {
                 emailErr = 'Enter a valid Email.';
-                setError(emailErr)
+               setError(emailErr)
                 return
             }
 
         }
-        navigation.navigate('OTPScreen', { data: email })
 
-        // setLoading(true)
-        // let res = await ForgetPasswordApi(email)
 
-        // if (res) {
-        //     setData({ ...res?.content, email: email })
-        //     navigation.navigate('OTPScreen', { data: { ...res?.content, email: email } })
-        // }
-        // setLoading(false)
+        setLoading(true)
+        let res = await ForgetPasswordApi(email)
+
+        if (res) {
+            // setData({ ...res?.content, email: email })
+            navigation.navigate('OTPScreen', { data: { ...res?.content, email: email } })
+        }
+        setLoading(false)
     }
 
     return (
@@ -80,7 +63,7 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
             <DSButton
                 label="Submit"
                 variant="filled"
-                onPress={handleSubmit}
+                onPress={onSubmit}
                 style={{ marginTop: 10 }}
             />
         </AuthLayout>

@@ -6,10 +6,12 @@ import AuthLayout from '../../components/AuthComponents/AuthLayout';
 import { DSButton, DSInput } from '../../components/baseComponents';
 import { EmailSvg } from '../../assets/svgs';
 import AppFonts from '../../../share/constants/AppFonts';
+import { resendEmail } from '../../../share/features/apis/ResendEmailApi';
 
 const EmailVerification = ({ navigation ,route}: any, ) => {
     const params = route?.params?.data
 
+//  Alert.alert("EmailVerification route"+JSON.stringify(route?.params?.data))
 
 
     return (
@@ -34,7 +36,9 @@ const EmailVerification = ({ navigation ,route}: any, ) => {
             <DSButton
                 label="Submit"
                 variant="filled"
-                onPress={()=>navigation.navigate('EmailSentScreen')}
+                onPress={()=>{
+                     resendEmail(params?.token)
+                    navigation.navigate('EmailSentScreen',{data: params ,userDetails: route?.params?.userDetails})}}
                 style={{ marginTop: 10 }}
             />
            
