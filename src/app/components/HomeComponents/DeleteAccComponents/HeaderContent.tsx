@@ -8,22 +8,22 @@ interface HeaderProps {
   headerTitle?: string;
   showBackButton?: boolean;
   // Optional: Allow passing a custom icon
-  backIcon?: React.ReactNode; 
+  backIcon?: React.ReactNode;
 }
-const HeaderContent : React.FC<HeaderProps> = ({
+const HeaderContent: React.FC<HeaderProps> = ({
   headerTitle = '',
   showBackButton = true,
 
 }) => {
-    const navigation=useNavigation()
+  const navigation = useNavigation()
   return (
     <View style={styles.headerRow}>
-           {showBackButton?<TouchableOpacity onPress={() => navigation.goBack()} >
-                <BackBtnSvg />
-            </TouchableOpacity>:<></>}
-            <Text style={styles.headerTitle}>{headerTitle}</Text>
+      {showBackButton ? <TouchableOpacity onPress={() => navigation.goBack()} >
+        <BackBtnSvg />
+      </TouchableOpacity> : <></>}
+      <Text style={styles.headerTitle}>{headerTitle}</Text>
 
-        </View>
+    </View>
   )
 }
 

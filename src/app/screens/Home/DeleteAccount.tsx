@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -16,8 +16,11 @@ import AppFonts from '../../../share/constants/AppFonts';
 import DSBottomSheet from '../../components/baseComponents/DSBottomSheet';
 import { styles } from '../../components/HomeComponents/DeleteAccComponents/DeleteAccStyles';
 import HeaderContent from '../../components/HomeComponents/DeleteAccComponents/HeaderContent';
+import { api } from '../../../share/core/api';
+import { AuthContext } from '../../../share/features/context/AuthContext';
 
 const DeleteAccount = ({ navigation }: any) => {
+      const { isLoading, logout } = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [delreason, setDelReason] = useState('');
     const [error, setError] = useState('');
@@ -25,9 +28,30 @@ const DeleteAccount = ({ navigation }: any) => {
     const handleOpenModal = () => {
         sheetRef.current?.expand();
     };
-    const handleDeleteAcc = () => {
+   
+    const deleteUser = async () => {
+        try {
 
-    };
+             sheetRef?.current?.close();
+
+            let payload = {
+                reason: delreason
+            }
+            
+            setLoading(true);
+            console.log('delete-customer payload ', payload)
+            const response = await api.post<any>('/delete-customer-account', payload, { requiresAuth: true }
+            );
+            console.log('delete-customer', response)
+            await logout()
+
+        } catch (err: any) {
+            console.log('delete-customer error', err)
+            setError(err?.message || 'Something went wrong');
+        } finally {
+            setLoading(false);
+        }
+    }
 
 
     return (
@@ -81,7 +105,7 @@ const DeleteAccount = ({ navigation }: any) => {
                 ref={sheetRef}
                 title="Account Deletion"
                 subtitle="Are you sure you want to permanently delete your Account?"
-                onConfirm={handleDeleteAcc}
+                onConfirm={deleteUser}
             />
         </>
     );

@@ -11,6 +11,7 @@ interface DSBottomSheetProps {
     subtitle?: string;
     confirmText?: string;
     cancelText?: string;
+    isLoading?: boolean;
     onConfirm: () => void;
     onClose?: () => void;
 }
@@ -18,10 +19,9 @@ interface DSBottomSheetProps {
 const DSBottomSheet = forwardRef<BottomSheet, DSBottomSheetProps>(({
     title,
     subtitle,
-    confirmText = "Yes, Sure",
-    cancelText = "Cancel",
     onConfirm,
-    onClose
+    onClose,
+    isLoading
 }, ref) => {
 
 
@@ -95,6 +95,7 @@ const DSBottomSheet = forwardRef<BottomSheet, DSBottomSheetProps>(({
                         variant="filled"
                         onPress={onConfirm}
                         style={styles.filledButton}
+                        loading={isLoading?isLoading:false}
                     />
 
 

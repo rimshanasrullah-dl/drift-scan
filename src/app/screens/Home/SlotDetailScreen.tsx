@@ -6,13 +6,15 @@ import { ValidIllustration } from '../../assets/svgs';
 import { styles } from '../../components/HomeComponents/SlotDetailsComponents/SlotDetailScreenStyles';
 import DetailRow from '../../components/HomeComponents/SlotDetailsComponents/DetailRow';
 import HeaderContent from '../../components/HomeComponents/DeleteAccComponents/HeaderContent';
+import { useUser } from '../../../share/features/context/UserContext';
 
 
-const SlotDetailScreen = ({ navigation }: any) => {
-  
+const SlotDetailScreen = ({ navigation, route }: any) => {
+    const params=route?.params?.data
+   const { userDetail ,loading}: any = useUser();
  
     return (
-        <ScreenWrapper  headerContent={<HeaderContent headerTitle={'The Fancy Delight'} showBackButton={false}/>}>
+        <ScreenWrapper  headerContent={<HeaderContent headerTitle={loading ? 'loading....' :userDetail?.restaurant_name}  showBackButton={false}/>}>
             <View style={styles.scrollContent} >
                 
                 <View style={styles.statusCard}>
@@ -26,10 +28,10 @@ const SlotDetailScreen = ({ navigation }: any) => {
 
                 
                 <View style={styles.detailsCard}>
-                    <DetailRow label="Order No." value="#ORD-20251009-1" />
-                    <DetailRow label="Customer Name" value="John Doe" />
-                    <DetailRow label="Restaurant Name" value="The Fancy Delight" />
-                    <DetailRow label="Scanned At" value="16:24" />
+                    <DetailRow label="Order No." value={params?.order_no} />
+                    <DetailRow label="Customer Name"  value={params?.customer_name}  />
+                    <DetailRow label="Restaurant Name"  value={params?.restaurant_name}  />
+                    <DetailRow label="Scanned At"  value={params?.scanned_at}  />
                 </View>
 
                

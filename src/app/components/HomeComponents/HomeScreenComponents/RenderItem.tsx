@@ -6,12 +6,12 @@ import { styles } from './HomeScreenstyles';
 import { Entered, Exit, ReleaseSlotSvg } from '../../../assets/svgs';
 
 export interface ActivityItem {
-  id: string;
-  name: string;
-  orderId: string;
+  customer_name?: string;
+  order_id: number;
+  order_no: string;
   date: string;
-  time: string;
-  status: 'Entered' | 'Exited';
+  parking_status: string;
+  is_released: boolean;
 }
 
 // 1. Add onPressRelease to props
@@ -21,7 +21,7 @@ interface RenderItemProps {
 }
 
 const RenderItem = ({ item, onPressRelease }: RenderItemProps) => {
-    const isEntered = item.status === 'Entered';
+    const isEntered = item.parking_status === 'Entered';
     const badgeColor = isEntered ? AppColors.THEME_GREEN : AppColors.THEME_BEIGE;
 
     return (
@@ -33,14 +33,14 @@ const RenderItem = ({ item, onPressRelease }: RenderItemProps) => {
 
           <View style={styles.cardDetails}>
             <View style={styles.nameRow}>
-              <Text numberOfLines={2} style={styles.cardName}>{item.name}</Text>
+              <Text numberOfLines={2} style={styles.cardName}>{item.customer_name || ''}</Text>
               <View style={[styles.statusBadge, { backgroundColor: badgeColor }]}>
-                <Text style={styles.statusText}>{item.status}</Text>
+                <Text style={styles.statusText}>{item.parking_status}</Text>
               </View>
             </View>
             <View style={styles.nameRow}>
-              <Text numberOfLines={2} style={styles.orderId}>{item.orderId}</Text>
-              <Text style={styles.dateTime}>{item.date} - {item.time}</Text>
+              <Text numberOfLines={2} style={styles.orderId}>{item.order_no}</Text>
+              <Text style={styles.dateTime}>{item.date}</Text>
             </View>
           </View>
         </View>

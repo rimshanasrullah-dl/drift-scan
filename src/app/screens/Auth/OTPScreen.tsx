@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 import AuthLayout from '../../components/AuthComponents/AuthLayout';
 import { DSButton } from '../../components/baseComponents';
@@ -122,6 +122,7 @@ const OtpScreen = ({ navigation, route }: any) => {
           text1: response?.detail,
         });
         console.log("res in otp generation", response)
+          Keyboard.dismiss()
         navigation.replace('ResetPasswordScreen', { data: params })
       }
       else {

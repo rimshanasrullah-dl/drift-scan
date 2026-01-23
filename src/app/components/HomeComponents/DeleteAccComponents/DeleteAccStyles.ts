@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import AppColors from "../../../../share/constants/AppColors";
 import AppFonts from "../../../../share/constants/AppFonts";
 
@@ -8,7 +8,12 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        paddingTop: 10,
+        // marginVertical:5,
+         marginTop:Platform.OS=='android'? 20:10,
+         marginBottom:5,
+       
+       
+
     },
     headerTitle: {
         fontSize: 20,

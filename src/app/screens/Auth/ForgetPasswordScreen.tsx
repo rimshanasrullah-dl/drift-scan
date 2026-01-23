@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Keyboard } from 'react-native';
 import { emailRegex } from '../../../share/core/Validators';
 import AuthLayout from '../../components/AuthComponents/AuthLayout';
 import { DSButton, DSInput } from '../../components/baseComponents';
@@ -33,7 +33,7 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
         let res = await ForgetPasswordApi(email)
 
         if (res) {
-            // setData({ ...res?.content, email: email })
+             Keyboard.dismiss()
             navigation.navigate('OTPScreen', { data: { ...res?.content, email: email } })
         }
         setLoading(false)

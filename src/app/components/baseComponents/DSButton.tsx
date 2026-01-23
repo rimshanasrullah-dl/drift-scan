@@ -15,7 +15,7 @@ import AppFonts from '../../../share/constants/AppFonts';
 // Define the colors based on your image
 const COLORS = {
   primary: AppColors.THEME_GREEN, // Dark Green
-  lightBg: '#E8ECE9', // The light grey background for outlined
+  lightBg: '#E8ECE9', 
   white: '#FFFFFF',
   disabled: '#A0A0A0',
 };
@@ -38,25 +38,26 @@ const DSButton: React.FC<DSButtonProps> = ({
 }) => {
   const isFilled = variant === 'filled';
 
-  // 1. Dynamic Container Styles
+  // 1.  Container Styles
   const containerStyle: ViewStyle = {
-    backgroundColor: disabled
-      ? COLORS.disabled
-      : isFilled
+    backgroundColor:
+    //  disabled
+    //   ? COLORS.disabled:
+      isFilled
       ? COLORS.primary
       : COLORS.lightBg,
     borderColor: isFilled ? 'transparent' : COLORS.primary,
     borderWidth: isFilled ? 0 : 1.5,
   };
 
-  // 2. Dynamic Text/Icon Styles
-  const contentColor = isFilled ? COLORS.white : COLORS.primary;
+  // 2.  Text/Icon Styles
+  const contentColor = (isFilled ||disabled) ? COLORS.white : COLORS.primary;
 
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       disabled={disabled || loading}
-      style={[styles.button, containerStyle, style,{backgroundColor:disabled?AppColors.THEME_GREEN:AppColors.THEME_GREEN, opacity:disabled?0.6:1}]} 
+      style={[styles.button, containerStyle, style,{ opacity:disabled?0.6:1}]} 
       {...props}>
       
    
@@ -68,7 +69,7 @@ const DSButton: React.FC<DSButtonProps> = ({
         )}
       </View>
 
-      <Text style={[styles.text, { color:disabled?'#FFF': contentColor }]}>{label}</Text>
+      <Text style={[styles.text, { color:contentColor }]}>{label}</Text>
     </TouchableOpacity>
   );
 };

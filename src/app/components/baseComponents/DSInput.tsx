@@ -16,7 +16,7 @@ interface InputProps extends TextInputProps {
   iconName: React.ReactNode; // Changed to ReactNode to accept SVG/Icon components directly
   error?: string;
   password?: boolean;
-  editable?: boolean;
+  notEditable?: boolean;
   onFocus?: () => void;
 }
 
@@ -25,7 +25,7 @@ const DSInput: React.FC<InputProps> = ({
   iconName,
   error,
   password,
-  editable,
+  notEditable,
   onFocus = () => {},
   ...props
 }) => {
@@ -40,7 +40,7 @@ const DSInput: React.FC<InputProps> = ({
           styles.inputContainer,
           {
             borderColor: error ? 'red' : isFocused ? AppColors.THEME_GREEN : '#ddd',
-            backgroundColor:editable==false ? '#F6F3EC' : '#fff',
+            backgroundColor:notEditable ? '#F6F3EC' : '#fff',
             overflow: 'hidden', 
           },
         ]}>
@@ -63,10 +63,10 @@ const DSInput: React.FC<InputProps> = ({
           placeholder={props.placeholder}
           value={props.value}
           onChangeText={props.onChangeText}
-          style={[styles.textInput,{ color:editable==false?'#959596':'#2c2c2c'}]}
+          style={[styles.textInput,{ color:notEditable?'#959596':'#2c2c2c'}]}
           autoCapitalize={props.autoCapitalize}
           keyboardType={props?.keyboardType ||'default'}
-          editable={editable?editable:true}
+          editable={notEditable?false:true}
           
         />
 

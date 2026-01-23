@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text, Alert, Keyboard } from 'react-native';
 import { validatePasswordAndConfirm } from '../../../share/core/Validators';
 import AuthLayout from '../../components/AuthComponents/AuthLayout';
 import { DSButton, DSInput } from '../../components/baseComponents';
@@ -19,6 +19,7 @@ const ResetPasswordScreen = ({ navigation, route }: any) => {
   });
 
   const resetPasswordApi = async () => {
+      Keyboard.dismiss()
     try {
       const payload = {
         "email": params?.email,

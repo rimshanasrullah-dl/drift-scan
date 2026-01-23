@@ -24,6 +24,7 @@ import SlotDetailScreen from './app/screens/Home/SlotDetailScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ScanScreen from './app/screens/Home/ScanScreen';
 import BootSplash from "react-native-bootsplash";
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 
 
@@ -81,6 +82,7 @@ export const RootNavigator = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
       <SafeAreaProvider>
         <StatusBar 
         translucent={true} 
@@ -97,6 +99,7 @@ export const RootNavigator = () => {
       </Stack.Navigator>
     </NavigationContainer>
       </SafeAreaProvider>
+      </BottomSheetModalProvider>
       </GestureHandlerRootView>
   );
 };

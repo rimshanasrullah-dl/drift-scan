@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Keyboard } from 'react-native';
 import { emailRegex, validateLoginFields } from '../../../share/core/Validators';
 import AuthLayout from '../../components/AuthComponents/AuthLayout';
 import { DSButton, DSInput } from '../../components/baseComponents';
@@ -86,7 +86,7 @@ const LoginScreen = ({ navigation }: any) => {
         }
         await loadProfile(response?.content?.token, obj)
         login(response?.content?.token)
-          await _saveItem("userData", response)
+        await _saveItem("userData", response)
 
         setUserDetails({ email: '', password: '' })
 
@@ -108,7 +108,7 @@ const LoginScreen = ({ navigation }: any) => {
 
 
   const handleLogin = async () => {
-
+    Keyboard.dismiss()
     const { valid, emailErr, passErr } = validateLoginFields(userDetails.email, userDetails.password);
 
     if (!valid) {
@@ -159,9 +159,10 @@ const LoginScreen = ({ navigation }: any) => {
           labelStyle={styles.rememberText}
         />
 
-        <TouchableOpacity onPress={() =>
+        <TouchableOpacity onPress={() =>{
+            Keyboard.dismiss()
           navigation.navigate('ForgotPasswordScreen')
-        }>
+        }}>
           <Text style={styles.rememberText}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>

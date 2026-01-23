@@ -14,25 +14,22 @@ import AppColors from '../../../share/constants/AppColors';
 import AppFonts from '../../../share/constants/AppFonts';
 import Svg, { Path } from 'react-native-svg';
 import HeaderContent from '../../components/HomeComponents/DeleteAccComponents/HeaderContent';
+import { api } from '../../../share/core/api';
+import Toast from 'react-native-toast-message';
+import { useUser } from '../../../share/features/context/UserContext';
 
 const ScanScreen = ({ navigation }: any) => {
   const device = useCameraDevice('back');
-  const { hasPermission, requestPermission } = useCameraPermission();
+   const { userDetail ,loading}: any = useUser();
+  const { hasPermission,  } = useCameraPermission();
   const isFocused = useIsFocused();
-
+  const [isloading, setLoading] = useState(false);
   const [isScanned, setIsScanned] = useState(false);
   const isProcessing = useRef(false);
 
   // Animation for scan line
   const scanLinePosition = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    if (!hasPermission) {
-      requestPermission();
-    }
-  }, [hasPermission]);
-
-  // Animate scan line
   useEffect(() => {
     const animateScanLine = () => {
       Animated.loop(
@@ -60,6 +57,38 @@ const ScanScreen = ({ navigation }: any) => {
     };
   }, [isScanned]);
 
+
+  const verifyQRCode = async (qrCode?: any) => {
+    setLoading(true)
+    const payload = {
+      "qr_code": qrCode,
+    }
+    try {
+
+      const res: any = await api.post("/parking/verify-qr-code", payload, { requiresAuth: true });
+      console.log("verifyQRCode res==", res)
+      if (res) {
+        navigation.replace("SlotDetailScreen", { data: res.content })
+      }
+
+      return res
+    } catch (err: any) {
+      console.log("verifyQRCode Catch==", err)
+      Toast.show({
+        type: 'error',
+        text1: err.message,
+      });
+      // setTimeout(() => {
+        setIsScanned(false); 
+        isProcessing.current = false; 
+      // }, 1000);
+
+    } finally {
+      isProcessing.current = false;
+      setLoading(false)
+    }
+  }
+
   const codeScanner = useCodeScanner({
     codeTypes: ['qr', 'ean-13'],
     onCodeScanned: (codes) => {
@@ -71,16 +100,21 @@ const ScanScreen = ({ navigation }: any) => {
         setIsScanned(true);
         console.log("Scanned QR Code:", value);
         setTimeout(() => {
+
+          verifyQRCode(value)
+          // navigation.replace("SlotDetailScreen")
+        }, 1000);
+      }
+      else{
           isProcessing.current = false;
-          navigation.replace("SlotDetailScreen")
-        }, 3000);
+         setIsScanned(false); 
       }
     }
   });
 
 
 
-  
+
 
   if (!hasPermission) return <View style={styles.center}><Text style={styles.instructionText}>No Camera Permission</Text></View>;
   if (device == null) {
@@ -92,9 +126,9 @@ const ScanScreen = ({ navigation }: any) => {
   }
 
   return (
-    <ScreenWrapper headerContent={<HeaderContent headerTitle='The Fancy Delight'/>}>
+    <ScreenWrapper headerContent={<HeaderContent headerTitle={loading ? 'loading....' :userDetail?.restaurant_name} />}>
       <View style={styles.whiteBackground}>
-        {isProcessing?.current ?
+        {isProcessing?.current || isloading ?
           <View style={[styles.scanFrameContainer, { gap: 50 }]}>
             <View style={{ marginHorizontal: 60 }}>
               <Text style={[styles.instructionText, { fontSize: 20, fontWeight: 'bold' }]}>
@@ -316,12 +350,12 @@ const styles = StyleSheet.create({
   // --- Scan Line (Widen) ---
   scanLine: {
     position: 'absolute',
-    left: 0,   
-    right: 0, 
+    left: 0,
+    right: 0,
     top: '50%',
     height: 8,
     borderRadius: 20,
-    backgroundColor: AppColors.THEME_GREEN ,
+    backgroundColor: AppColors.THEME_GREEN,
     // shadowColor: AppColors.THEME_GREEN || '#1a4d2e',
     // shadowOffset: { width: 0, height: 0 },
     // shadowOpacity: 0.8,

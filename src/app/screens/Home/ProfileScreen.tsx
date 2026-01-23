@@ -136,12 +136,12 @@ const ProfileScreen = ({ navigation }: any) => {
                             {/* User Info Header */}
                             <View style={styles.userInfoRow}>
                                 <Image
-                                    source={require('../../assets/pngs/avatar_placeholder.png')}
+                                    source={{ uri: userDetail?.image_path }}
                                     style={styles.avatar}
                                 />
                                 <View style={styles.userTextContainer}>
                                     <View style={styles.nameRow}>
-                                        <Text style={styles.userName}>{userDetail?.name || 'User'}</Text>
+                                        <Text style={styles.userName}>{userDetail?.name}</Text>
                                         {userDetail?.email_verified_at &&
                                             <View style={styles.verifiedBadge}>
                                                 <Verified />
@@ -164,7 +164,7 @@ const ProfileScreen = ({ navigation }: any) => {
                                     iconName={<EmailSvg />}
                                     value={userDetail?.email || email}
                                     autoCapitalize='none'
-                                    editable={false}
+                                    notEditable={true}
                                 />
 
                                 <DSInput
@@ -280,6 +280,7 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 30,
+        alignSelf:'flex-start'
     },
     userTextContainer: {
         marginLeft: 15,
@@ -289,11 +290,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        gap:10
     },
     userName: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#1F3B25', // Dark green
+        flex:2
     },
     verifiedBadge: {
         flexDirection: 'row',
@@ -304,6 +307,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 1,
         borderColor: '#79C75D',
+        alignSelf:'flex-start'
     },
     verifiedText: {
         color: '#5F9D43',

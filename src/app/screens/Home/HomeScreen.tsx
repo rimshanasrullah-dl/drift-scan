@@ -5,6 +5,7 @@ import {
   RefreshControl,
   Alert,
   Linking,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -21,11 +22,14 @@ import RenderEmptyComponent from '../../components/HomeComponents/HomeScreenComp
 import DSBottomSheet from '../../components/baseComponents/DSBottomSheet';
 import { useCameraPermission } from 'react-native-vision-camera';
 import { PermissionModal } from '../../components/HomeComponents/PermissionModal';
+import { api } from '../../../share/core/api';
+import Toast from 'react-native-toast-message';
 
 const HomeScreen = ({ navigation }: any) => {
   const { hasPermission, requestPermission } = useCameraPermission();
 
   const [loading, setLoading] = useState(true);
+  const [rsloading, setRSLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState<ActivityItem[]>([]);
   const sheetRef = useRef<BottomSheet>(null);
@@ -33,22 +37,49 @@ const HomeScreen = ({ navigation }: any) => {
   const [permissionModalVisible, setPermissionModalVisible] = useState(false);
 
 
-  const fetchData = () => {
-    const mockData: ActivityItem[] = [
-      { id: '1', name: 'John Doe', orderId: '#ORD-20251009-1', date: '11 Nov 2025', time: '21:00', status: 'Entered' },
-      { id: '2', name: 'Emma Smith', orderId: '#ORD-20251010-1', date: '10 Nov 2025', time: '22:00', status: 'Exited' },
-      { id: '3', name: 'Robert David', orderId: '#ORD-20251122-6', date: '09 Nov 2025', time: '22:30', status: 'Entered' },
-      { id: '4', name: 'Jameel Ahmed', orderId: '#ORD-20256846-1', date: '09 Nov 2025', time: '24:00', status: 'Entered' },
-      { id: '5', name: 'Sarah Joseph', orderId: '#ORD-20252088-2', date: '08 Nov 2025', time: '18:40', status: 'Exited' },
-    ];
+  const fetchHomeData = async () => {
+    try {
 
-    setData(mockData);
-    setLoading(false);
-    setRefreshing(false);
-  };
+      const res: any = await api.post("/parking/recent-activities", { requiresAuth: true });
+
+      setData(res?.content?.recent_activities)
+      console.log("recent res==", res)
+      return res
+    } catch (err: any) {
+      console.log("recent actvity Catch err==", err)
+      setData([])
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
+  }
+
+
+  const releaseSlot = async (id?: any,) => {
+    setRSLoading(true)
+    const payload={
+        "order_id": id,
+    }
+    try {
+
+      const res: any = await api.post("/parking/release-slot",payload, { requiresAuth: true });
+      fetchHomeData()
+      console.log("releaseSlot res==", res)
+      return res
+    } catch (err: any) {
+      console.log("releaseSlot actvity Catch err==", err)
+        Toast.show({
+              type: 'error',
+              text1: err.message,
+            });
+    } finally {
+      setRSLoading(false)
+    }
+  }
+
 
   useEffect(() => {
-    setTimeout(() => fetchData(), 2000);
+    fetchHomeData()
   }, []);
 
   useEffect(() => {
@@ -56,9 +87,10 @@ const HomeScreen = ({ navigation }: any) => {
       setPermissionModalVisible(false)
     }
   }, [hasPermission])
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => fetchData(), 1500);
+    fetchHomeData()
   }, []);
 
 
@@ -69,20 +101,18 @@ const HomeScreen = ({ navigation }: any) => {
 
   const handleConfirmRelease = () => {
     if (selectedItem) {
-      console.log(`Releasing slot for Order ID: ${selectedItem.orderId}`);
-      // TODO: Add your API call here
+      console.log(`Releasing slot for Order ID: ${selectedItem?.order_id}`);
+      releaseSlot(selectedItem?.order_id)
     }
     sheetRef.current?.close();
   };
 
 
-  const scanPress =  () => {
-
-
+  const scanPress = () => {
     let permissionResult: any
 
     if (!hasPermission) {
-      permissionResult =  requestPermission()
+      permissionResult = requestPermission()
     }
 
     if (permissionResult?.granted || permissionResult?.status === 'granted' || permissionResult == true || hasPermission) {
@@ -109,7 +139,7 @@ const HomeScreen = ({ navigation }: any) => {
 
         <View style={styles.sheetView}>
 
-          <SafeAreaView style={{ marginTop: -15, flex: 1 }}>
+          <SafeAreaView style={{ marginTop: Platform.OS == 'ios' ? -35 : 0, flex: 1, }}>
             {RenderHeader()}
             {loading ? (
               <ActivitySkeleton />
@@ -117,7 +147,7 @@ const HomeScreen = ({ navigation }: any) => {
 
               <FlatList
                 data={data}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item: any) => item?.order_id}
                 renderItem={({ item }) => (
                   <RenderItem
                     item={item}
@@ -150,6 +180,7 @@ const HomeScreen = ({ navigation }: any) => {
         confirmText="Yes, Release"
         cancelText="Cancel"
         onConfirm={handleConfirmRelease}
+        isLoading={rsloading}
       />
       <PermissionModal
         visible={permissionModalVisible}
