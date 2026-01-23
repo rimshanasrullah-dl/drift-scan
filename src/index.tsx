@@ -23,7 +23,7 @@ import DeleteAccount from './app/screens/Home/DeleteAccount';
 import SlotDetailScreen from './app/screens/Home/SlotDetailScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ScanScreen from './app/screens/Home/ScanScreen';
-import BootSplash from "react-native-bootsplash";
+import RNBootSplash from "react-native-bootsplash";
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 
@@ -89,7 +89,7 @@ export const RootNavigator = () => {
         backgroundColor="transparent" 
         barStyle="dark-content" 
       />
-    <NavigationContainer onReady={() => BootSplash.hide({ fade: true })}>
+    <NavigationContainer onReady={() => setTimeout(()=>RNBootSplash.hide({ fade: true }),2000)}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken == null ? (
           <Stack.Screen name="Auth" component={AuthNavigator} />

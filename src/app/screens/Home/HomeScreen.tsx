@@ -24,10 +24,13 @@ import { useCameraPermission } from 'react-native-vision-camera';
 import { PermissionModal } from '../../components/HomeComponents/PermissionModal';
 import { api } from '../../../share/core/api';
 import Toast from 'react-native-toast-message';
+import { useAuthCheck } from '../../../share/hooks/useAuthCheck';
+import { useUser } from '../../../share/features/context/UserContext';
 
 const HomeScreen = ({ navigation }: any) => {
   const { hasPermission, requestPermission } = useCameraPermission();
-
+  const { userDetail, fetchUserDetail, setUserDetail } = useUser();
+  const { loadProfile } = useAuthCheck();
   const [loading, setLoading] = useState(true);
   const [rsloading, setRSLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -36,6 +39,12 @@ const HomeScreen = ({ navigation }: any) => {
   const [selectedItem, setSelectedItem] = useState<ActivityItem | null>(null);
   const [permissionModalVisible, setPermissionModalVisible] = useState(false);
 
+
+  useEffect(() => {
+    if(!userDetail){
+    loadProfile()
+    }
+  }, [userDetail])
 
   const fetchHomeData = async () => {
     try {
@@ -57,21 +66,21 @@ const HomeScreen = ({ navigation }: any) => {
 
   const releaseSlot = async (id?: any,) => {
     setRSLoading(true)
-    const payload={
-        "order_id": id,
+    const payload = {
+      "order_id": id,
     }
     try {
 
-      const res: any = await api.post("/parking/release-slot",payload, { requiresAuth: true });
+      const res: any = await api.post("/parking/release-slot", payload, { requiresAuth: true });
       fetchHomeData()
       console.log("releaseSlot res==", res)
       return res
     } catch (err: any) {
       console.log("releaseSlot actvity Catch err==", err)
-        Toast.show({
-              type: 'error',
-              text1: err.message,
-            });
+      Toast.show({
+        type: 'error',
+        text1: err.message,
+      });
     } finally {
       setRSLoading(false)
     }

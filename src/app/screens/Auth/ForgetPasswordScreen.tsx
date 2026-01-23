@@ -13,6 +13,7 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
   
 
      const onSubmit = async () => {
+        //  navigation.navigate('OTPScreen', { data: {} })
         let emailErr = ''
         if (!email?.trim()) {
             emailErr = 'Email is required.';

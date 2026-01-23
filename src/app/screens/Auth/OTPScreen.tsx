@@ -17,54 +17,67 @@ const OtpScreen = ({ navigation, route }: any) => {
   const [otp, setOtp] = useState('');
   const [otpErr, setOtpErr] = useState('');
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState("00:00");
+  const [timer, setTimer] = useState(60);
   const [expires_at, setExpiresAt] = useState(expiryFromApi);
 
-  useEffect(() => {
-    if (!expires_at) return;
+useEffect(() => {
+    // If timer is at 0, stop the countdown
+    if (timer == 0) return;
 
-
-    const expiryTime: any = parseExpiryTime(expires_at);
-
-
-    if (!expiryTime || isNaN(expiryTime.getTime())) {
-      setTimer("00:00");
-      return;
-    }
-
-
-    const interval = setInterval(() => {
-      // Ensure getDubaiDate() returns a JS Date object
-      const now: any = getDubaiDate();
-      const diff = expiryTime - now;
-
-
-      if (diff <= 0) {
-        setTimer("00:00");
-        clearInterval(interval);
-        return;
-      }
-
-
-      // Calculate Hours, Minutes, Seconds
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-
-      // Format Logic
-      const hDisplay = hours > 0 ? `${hours.toString().padStart(2, "0")}:` : "";
-      const mDisplay = minutes.toString().padStart(2, "0");
-      const sDisplay = seconds.toString().padStart(2, "0");
-
-
-      setTimer(`${hDisplay}${mDisplay}:${sDisplay}`);
-
+    // Save intervalId to clear it later
+    const intervalId = setInterval(() => {
+      setTimer((prevTime) => prevTime - 1);
     }, 1000);
 
+    // clear interval on re-render or unmount
+    return () => clearInterval(intervalId);
+  }, [timer]);
 
-    return () => clearInterval(interval);
-  }, [expires_at]);
+  // useEffect(() => {
+  //   if (!expires_at) return;
+
+
+  //   const expiryTime: any = parseExpiryTime(expires_at);
+
+
+  //   if (!expiryTime || isNaN(expiryTime.getTime())) {
+  //     setTimer("00:00");
+  //     return;
+  //   }
+
+
+  //   const interval = setInterval(() => {
+  //     // Ensure getDubaiDate() returns a JS Date object
+  //     const now: any = getDubaiDate();
+  //     const diff = expiryTime - now;
+
+
+  //     if (diff <= 0) {
+  //       setTimer("00:00");
+  //       clearInterval(interval);
+  //       return;
+  //     }
+
+
+  //     // Calculate Hours, Minutes, Seconds
+  //     const hours = Math.floor(diff / (1000 * 60 * 60));
+  //     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  //     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+
+  //     // Format Logic
+  //     const hDisplay = hours > 0 ? `${hours.toString().padStart(2, "0")}:` : "";
+  //     const mDisplay = minutes.toString().padStart(2, "0");
+  //     const sDisplay = seconds.toString().padStart(2, "0");
+
+
+  //     setTimer(`${hDisplay}${mDisplay}:${sDisplay}`);
+
+  //   }, 1000);
+
+
+  //   return () => clearInterval(interval);
+  // }, [expires_at]);
 
 
   const handleResendOTP = async () => {
@@ -82,6 +95,7 @@ const OtpScreen = ({ navigation, route }: any) => {
 
 
          if (response?.content) {
+          setTimer(60)
            setExpiresAt(response?.content?.expires_at)
           //  setNewToken(response?.content?.token)
          }
@@ -191,26 +205,26 @@ const OtpScreen = ({ navigation, route }: any) => {
       <DSButton
         label="Verify"
         variant="filled"
-        disabled={timer === "00:00"}
+        disabled={timer == 0}
         loading={loading}
         onPress={() => handleVerifyOTP(otp)}
         style={{ marginTop: 20 }}
       />
 
       <View style={styles.resendContainer}>
-        {timer === "00:00" ? (
+        {timer ==0 ? (
           <Text style={styles.resendLink}>
             Didn’t receive code?{' '}
             <Text
               onPress={handleResendOTP}
-              style={[styles.resendLink, { color: AppColors.THEME_GREEN }]}
+              style={[styles.resendLink, { color: AppColors.THEME_GREEN , fontWeight: 'bold'}]}
             >
               Resend OTP
             </Text>
           </Text>
         ) : (
           <Text style={styles.timerText}>
-            {timer}
+          Resend code in : {timer}
           </Text>
         )}
       </View>
@@ -256,8 +270,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   resendLink: {
-    fontWeight: 'bold',
-    color: '#1E3C2F',
+    // fontWeight: 'bold',
+    color: AppColors.THEME_GREEN,
   }
 });
 

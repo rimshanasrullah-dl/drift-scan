@@ -9,7 +9,7 @@ import { Alert } from 'react-native';
 
 
 export const useAuthCheck = () => {
-    const { isLoading,userToken, login,logout } = useContext(AuthContext);
+    const { userToken, logout } = useContext(AuthContext);
    
    const { userDetail, fetchUserDetail, setUserDetail } = useUser();
 

@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { _removeItem } from '../../utility/KeyValueStorage';
+// Make sure you import _setItem and _getItem (or whatever your 'get' function is named)
+import { _removeItem, _saveItem, _loadItem } from '../../utility/KeyValueStorage';
 import { useUser } from './UserContext';
+import { setGlobalLogout } from '../../core/ApiClient';
 
 type AuthContextType = {
   isLoading: boolean;
@@ -9,9 +11,7 @@ type AuthContextType = {
   logout: () => Promise<void>;
 };
 
-
 export const AuthContext = createContext<AuthContextType>({} as AuthContextType);
-
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -20,15 +20,27 @@ type AuthProviderProps = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [userToken, setUserToken] = useState<string | null>(null);
-  const { userDetail, setUserDetail, fetchUserDetail }: any = useUser();
+  const { setUserDetail }: any = useUser();
 
+  // 1. CHECK LOGIN STATUS ON APP START
   const isLoggedIn = async () => {
     try {
       setIsLoading(true);
-      setUserToken(userToken);
+      
+      // Attempt to retrieve the token from storage
+      // Replace 'userToken' with whatever key you prefer, but keep it consistent
+      let storedToken = await _loadItem('userToken'); 
+
+      if (storedToken) {
+        setUserToken(storedToken);
+      } else {
+        setUserToken(null);
+      }
+      
       setIsLoading(false);
     } catch (e) {
       console.log(`isLoggedIn error: ${e}`);
+      setUserToken(null); 
       setIsLoading(false);
     }
   };
@@ -36,17 +48,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     isLoggedIn();
   }, []);
+  useEffect(() => {
+    setGlobalLogout(logout);
+  }, []);
 
-  const login = async (token:string) => {
+  // 2. LOGIN FUNCTION
+  const login = async (token: string) => {
     setIsLoading(true);
+    
+    // Save token to persistent storage
+    await _saveItem('userToken', token);
+    
+    // Update state
     setUserToken(token);
+    
     setIsLoading(false);
   };
 
+  // 3. LOGOUT FUNCTION
   const logout = async () => {
     setIsLoading(true);
+    
+    await _removeItem('userToken');
     await _removeItem('userData');
-    setUserDetail(null)
+    
+    setUserDetail(null);
     setUserToken(null);
     setIsLoading(false);
   };
