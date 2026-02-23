@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
     },
     emptyTitle: {
         fontSize: 22,
-        fontWeight: 'bold',
         color: '#2C2C2E',
         marginVertical: 10,
         fontFamily:AppFonts.ExtraBold
@@ -87,7 +86,6 @@ const styles = StyleSheet.create({
     seeAllChipTitle: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: 'bold',
         fontFamily:AppFonts.ExtraBold
     },
 })

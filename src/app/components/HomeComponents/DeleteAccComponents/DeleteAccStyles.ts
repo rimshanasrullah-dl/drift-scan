@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 20,
-        fontWeight: '600',
+        fontFamily: AppFonts.SemiBold,
         color: AppColors.THEME_BEIGE,
         marginLeft: 15,
     },
@@ -67,7 +67,7 @@ export const styles = StyleSheet.create({
     },
     userName: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: AppFonts.Bold,
         color: '#1F3B25', // Dark green
     },
     verifiedBadge: {
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
     verifiedText: {
         color: '#5F9D43',
         fontSize: 12,
-        fontWeight: '600',
+        fontFamily: AppFonts.SemiBold,
         marginLeft: 4,
     },
     restaurantName: {
@@ -152,7 +152,7 @@ export const styles = StyleSheet.create({
     },
     actionText: {
         fontSize: 14,
-        fontWeight: '500',
+        fontFamily: AppFonts.Medium,
         color: '#2c2c2E',
     },
 
@@ -172,7 +172,7 @@ export const styles = StyleSheet.create({
     },
     notesHeading: {
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: AppFonts.SemiBold,
         color: '#2c2c2c',
         paddingHorizontal: 10
         // marginBottom: 10,

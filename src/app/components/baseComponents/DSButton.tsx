@@ -96,7 +96,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 14,
-    fontWeight: '500',
     textAlign: 'center',
     fontFamily:AppFonts.ExtraBold
   },

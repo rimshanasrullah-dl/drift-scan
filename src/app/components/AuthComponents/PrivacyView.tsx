@@ -30,10 +30,13 @@ export default PrivacyView
 
 const styles = StyleSheet.create({
     termsContainer: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom:Platform.OS=='android' ?20:8,
+        // position: 'absolute',
+        // left: 0,
+        // right: 0,
+        // bottom:Platform.OS=='android' ?20:8,
+        width: '100%',
+        marginBottom: Platform.OS == 'android' ? 20 : 8,
+        marginTop: 10,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',

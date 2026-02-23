@@ -5,20 +5,21 @@ import {
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   Dimensions,
-  StatusBar,
   Keyboard,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BackBtnSvg } from '../../assets/svgs';
+import {  AuthBackgroundSvg, BackBtnSvg, BackSvg, SplashSvg } from '../../assets/svgs';
 import AppColors from '../../../share/constants/AppColors';
 import PrivacyView from './PrivacyView';
 import NetworkWrapper from '../baseComponents/NetworkWrapper';
+import TemplateSvg from '../../assets/svgs/TemplateSvg.svg'
 
-const BG_MAIN = require('../../assets/pngs/BackgroundImage1.png');
+
+const BG_MAIN = require('../../assets/pngs/bgMain.png');
 const BG_INNER = require('../../assets/pngs/backgrounImage2.png');
 
 interface AuthLayoutProps {
@@ -33,6 +34,9 @@ interface AuthLayoutProps {
 
 const { height } = Dimensions.get('window');
 
+
+const KEYBOARD_BUFFER = 100;
+
 const AuthLayout: React.FC<AuthLayoutProps> = ({
   children,
   title,
@@ -43,77 +47,82 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
   onBackPress,
 }) => {
   const scrollViewRef = useRef<ScrollView>(null);
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const hideListener = Keyboard.addListener('keyboardDidHide', () => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      Animated.timing(keyboardOffset, {
+        toValue: -(e.endCoordinates.height - KEYBOARD_BUFFER),
+        duration: Platform.OS === 'ios' ? e.duration : 200,
+        useNativeDriver: true,
+      }).start();
     });
-    return () => hideListener.remove();
-  }, []);
+
+    const hideSub = Keyboard.addListener(hideEvent, (e) => {
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: Platform.OS === 'ios' ? e.duration : 200,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [keyboardOffset]);
 
   return (
     <View style={styles.container}>
       <NetworkWrapper>
-        <ImageBackground source={BG_MAIN} style={styles.outerBackground} >
-          <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              style={{ flex: 1 }}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        <ImageBackground source={BG_MAIN} style={styles.outerBackground}>
+          <View style={styles.svgBackground} pointerEvents="none">
+            <AuthBackgroundSvg />
+          </View>
+          <View style={{ flex: 1, zIndex: 10 }}>
+            <ScrollView
+              ref={scrollViewRef}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+              keyboardShouldPersistTaps="handled"
             >
-              <ScrollView
-                ref={scrollViewRef}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-                bounces={false}
-                keyboardShouldPersistTaps="handled"
-              >
-
-
-
-                <View style={{ marginBottom: 5 }}>
-
-                  {showBack && (
-                    <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
-                      <BackBtnSvg />
-                    </TouchableOpacity>
-                  )}
-                  <View style={styles.androidShadowWrapper}>
-                    <View style={[styles.shadowContainer,
-
-                    ]}
+              <Animated.View style={{ transform: [{ translateY: keyboardOffset }] }}>
+                {showBack && (
+                  <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+                    <BackBtnSvg />
+                  </TouchableOpacity>
+                )}
+                <View style={styles.androidShadowWrapper}>
+                  <View style={styles.shadowContainer}>
+                    <ImageBackground
+                      source={BG_INNER}
+                      style={[styles.innerCard, cardHeight && { minHeight: height * 0.55 }]}
+                      imageStyle={styles.innerCardImage}
+                      resizeMode="stretch"
                     >
-                      <ImageBackground
-                        source={BG_INNER}
-                        style={[styles.innerCard,
-                        cardHeight && { minHeight: height * 0.55, }
-                        ]}
-                        imageStyle={[styles.innerCardImage,]}
-                        resizeMode="stretch"
-                      >
-
-
+                      <SafeAreaView>
                         <View style={styles.header}>
-                          {headerSvg && <View>{headerSvg}</View>}
+                          {headerSvg && <View style={{marginBottom:15}}>{headerSvg}</View>}
                           <Text style={styles.title}>{title}</Text>
                           {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
                         </View>
 
-                        <View style={{ paddingHorizontal: 20, flex: 1, }}>
+                        <View style={{ paddingHorizontal: 20, flex: 1, justifyContent: 'center' }}>
                           {children}
                         </View>
-
                         <View style={{ height: 40 }} />
                         {cardHeight && <PrivacyView />}
-                      </ImageBackground>
-                    </View>
+                      </SafeAreaView>
+                    </ImageBackground>
                   </View>
                 </View>
-              </ScrollView>
-            </KeyboardAvoidingView>
-
-          </SafeAreaView>
+              </Animated.View>
+            </ScrollView>
+          </View>
         </ImageBackground>
       </NetworkWrapper>
     </View>
@@ -128,6 +137,15 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+    backgroundColor: 'pink'
+  },
+  svgBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
   },
   scrollContent: {
     flexGrow: 1,
@@ -151,7 +169,7 @@ const styles = StyleSheet.create({
   },
   innerCard: {
     paddingTop: 30,
-    justifyContent: 'center',
+    // justifyContent: 'center', 
     width: '100%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
@@ -173,6 +191,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
     padding: 15,
   },
+
   header: {
     alignItems: 'center',
     marginBottom: 25,

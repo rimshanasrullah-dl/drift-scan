@@ -7,6 +7,7 @@ import {
   Linking,
   Platform,
 } from 'react-native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomSheet from '@gorhom/bottom-sheet';
 import DSButton from '../../components/baseComponents/DSButton';
@@ -20,7 +21,7 @@ import RenderHeader from '../../components/HomeComponents/HomeScreenComponents/R
 import RenderItem, { ActivityItem } from '../../components/HomeComponents/HomeScreenComponents/RenderItem';
 import RenderEmptyComponent from '../../components/HomeComponents/HomeScreenComponents/RenderEmptyComponent';
 import DSBottomSheet from '../../components/baseComponents/DSBottomSheet';
-import { useCameraPermission } from 'react-native-vision-camera';
+import { useCameraPermission, Camera } from 'react-native-vision-camera';
 import { PermissionModal } from '../../components/HomeComponents/PermissionModal';
 import { api } from '../../../share/core/api';
 import Toast from 'react-native-toast-message';
@@ -38,11 +39,12 @@ const HomeScreen = ({ navigation }: any) => {
   const sheetRef = useRef<BottomSheet>(null);
   const [selectedItem, setSelectedItem] = useState<ActivityItem | null>(null);
   const [permissionModalVisible, setPermissionModalVisible] = useState(false);
+  const isFocused = useIsFocused();
 
 
   useEffect(() => {
     if(!userDetail){
-    loadProfile()
+      loadProfile()
     }
   }, [userDetail])
 
@@ -118,24 +120,33 @@ const HomeScreen = ({ navigation }: any) => {
 
 
   const scanPress = () => {
-    let permissionResult: any
-
-    if (!hasPermission) {
-      permissionResult = requestPermission()
-    }
-
-    if (permissionResult?.granted || permissionResult?.status === 'granted' || permissionResult == true || hasPermission) {
+    // If already has permission, navigate directly
+    if (hasPermission) {
       navigation.navigate("ScanScreen");
       return;
     }
-    if (!hasPermission && (!permissionResult.granted || permissionResult.status !== 'granted' || permissionResult == false))
-      setPermissionModalVisible(true)
+
+    // On Android, show custom rationale modal first
+    // On iOS, request permission directly (iOS has custom text in Info.plist)
+    if (Platform.OS === 'android') {
+      setPermissionModalVisible(true);
+    } else {
+      // iOS - check status first
+      const status = Camera.getCameraPermissionStatus();
+      if (status === 'denied' || status === 'restricted') {
+        setPermissionModalVisible(true);
+      } else {
+        requestPermission().then((result) => {
+          if (result) {
+            navigation.navigate("ScanScreen");
+          }
+        });
+      }
+    }
   };
-
-
   return (
     <>
-      <ScreenWrapper headerContent={<HomeHeader onPressFun={() => navigation.navigate("ProfileScreen")} />}>
+      <ScreenWrapper showLogoOnOffline headerContent={<HomeHeader onPressFun={() => navigation.navigate("ProfileScreen")} />}>
 
 
         <DSButton
@@ -148,7 +159,7 @@ const HomeScreen = ({ navigation }: any) => {
 
         <View style={styles.sheetView}>
 
-          <SafeAreaView style={{ marginTop: Platform.OS == 'ios' ? -35 : 0, flex: 1, }}>
+          <SafeAreaView edges={['left', 'right', 'bottom']} style={{ marginTop: 20, flex: 1, }}>
             {RenderHeader()}
             {loading ? (
               <ActivitySkeleton />
@@ -192,10 +203,22 @@ const HomeScreen = ({ navigation }: any) => {
         isLoading={rsloading}
       />
       <PermissionModal
-        visible={permissionModalVisible}
+        visible={permissionModalVisible && isFocused}
+        onAllow={async () => {
+          const status = Camera.getCameraPermissionStatus();
+          if (status === 'denied') {
+            Linking.openSettings();
+          } else {
+             const result = await requestPermission();
+              if (result) {
+                navigation.navigate("ScanScreen");
+              }
+          }
+          setPermissionModalVisible(false);
+        }}
         onOpenSettings={() => {
-          Linking.openSettings()
-          setPermissionModalVisible(false)
+          Linking.openSettings();
+          setPermissionModalVisible(false);
         }}
         onDeny={() => setPermissionModalVisible(false)}
       />

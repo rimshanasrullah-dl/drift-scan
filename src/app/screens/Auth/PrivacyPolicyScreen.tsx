@@ -4,17 +4,21 @@ import { styles } from '../../components/AuthComponents/PpStyles';
 import { privacyData } from '../../components/AuthComponents/DataFile';
 import { renderTextWithBoldEmail } from '../../../share/utility/HelperFunctions';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BackBtnSvg } from '../../assets/svgs';
+import { BackBtnSvg, PPBackgroundSvg } from '../../assets/svgs';
 import NetworkWrapper from '../../components/baseComponents/NetworkWrapper';
 
 
-const BG_MAIN = require('../../assets/pngs/BackgroundImag3.png');
+const BG_MAIN = require('../../assets/pngs/bgMain.png');
+// const BG_MAIN = require('../../assets/pngs/BackgroundImag3.png');
 const PrivacyPolicyScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
   return (
     <View style={styles.cardContainer}>
       <NetworkWrapper>
       <ImageBackground source={BG_MAIN} style={styles.outerBackground} >
+          <View style={styles.svgBackground} pointerEvents="none">
+            <PPBackgroundSvg />
+          </View>
         <SafeAreaView style={[styles.safeArea,{ }]}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <BackBtnSvg />

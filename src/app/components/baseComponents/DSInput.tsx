@@ -6,21 +6,21 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInputProps,
+  Platform,
 } from 'react-native';
 import { HideEye, VisibleEyeSvg } from '../../assets/svgs';
 import AppFonts from '../../../share/constants/AppFonts';
 import AppColors from '../../../share/constants/AppColors';
 
 interface InputProps extends TextInputProps {
-  label?: string; // Made optional
-  iconName: React.ReactNode; // Changed to ReactNode to accept SVG/Icon components directly
+  label?: string; 
+  iconName: React.ReactNode; 
   error?: string;
   password?: boolean;
   notEditable?: boolean;
   onFocus?: () => void;
 }
-
-const DSInput: React.FC<InputProps> = ({
+ const DSInput: React.FC<InputProps> = ({
   label,
   iconName,
   error,
@@ -51,24 +51,38 @@ const DSInput: React.FC<InputProps> = ({
         </View>
 
         
+        {notEditable && Platform.OS === 'android' ? (
+          <Text
+            style={[
+              styles.textInput,
+              { color: '#959596', textAlignVertical: 'center' },
+            ]}
+            numberOfLines={1}
+            ellipsizeMode="tail">
+            {props.value}
+          </Text>
+        ) : (
           <TextInput
-          secureTextEntry={hidePassword}
-          autoCorrect={false}
-          onFocus={() => {
-            onFocus();
-            setIsFocused(true);
-          }}
-          onBlur={() => setIsFocused(false)}
-          placeholderTextColor="#A0A0A0"
-          placeholder={props.placeholder}
-          value={props.value}
-          onChangeText={props.onChangeText}
-          style={[styles.textInput,{ color:notEditable?'#959596':'#2c2c2c'}]}
-          autoCapitalize={props.autoCapitalize}
-          keyboardType={props?.keyboardType ||'default'}
-          editable={notEditable?false:true}
-          
-        />
+            secureTextEntry={hidePassword}
+            autoCorrect={false}
+            onFocus={() => {
+              onFocus();
+              setIsFocused(true);
+            }}
+            onBlur={() => setIsFocused(false)}
+            placeholderTextColor="#A0A0A0"
+            placeholder={props.placeholder}
+            value={props.value}
+            onChangeText={props.onChangeText}
+            style={[
+              styles.textInput,
+              { color: notEditable ? '#959596' : '#2c2c2c' },
+            ]}
+            autoCapitalize={props.autoCapitalize}
+            keyboardType={props?.keyboardType || 'default'}
+            editable={notEditable ? false : true}
+          />
+        )}
 
         {password && (
           <TouchableOpacity 
@@ -93,7 +107,7 @@ const DSInput: React.FC<InputProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,
-    width: '100%', // Ensure the component itself takes full width
+    width: '100%', 
   },
   label: {
     marginVertical: 5,

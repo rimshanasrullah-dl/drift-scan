@@ -31,7 +31,7 @@ export const styles = StyleSheet.create({
   },
   sectionTitleRow: {
     flexDirection: 'row',
-    // alignItems: 'center',
+    alignItems: 'center',
 
     gap: 10
   },
@@ -39,7 +39,6 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: AppFonts.Bold,
     color: '#1E3C2F',
-    fontWeight: '600',
   },
   divider: {
     height: 1,
@@ -90,7 +89,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: AppFonts.Bold,
     color: '#333',
-    fontWeight: '600',
     flex: 2
   },
   statusBadge: {
@@ -139,7 +137,7 @@ export const styles = StyleSheet.create({
   releaseText: {
     color: AppColors.THEME_GREEN,
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: AppFonts.SemiBold,
   },
 
   // Empty State
@@ -152,7 +150,6 @@ export const styles = StyleSheet.create({
   emptyText: {
     marginTop: 20,
     fontSize: 20,
-    fontWeight: 'bold',
     color: AppColors.THEME_BEIGE,
     fontFamily: AppFonts.Bold,
   },
@@ -185,7 +182,6 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: AppFonts.Bold,
     color: AppColors.THEME_GREEN,
-    fontWeight: '600',
 
   },
   tagline: {

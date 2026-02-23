@@ -17,4 +17,8 @@ export { default as EmailSentSvg } from './EmailSentSvg';
 export { default as QrScanSvg } from './QrScanSvg';
 export { default as Verified } from './Verified';
 export { default as LeftArrowSvg } from './LeftArrowSvg';
+export { default as AuthBackgroundSvg } from './AuthBackgroundSvg';
 export { default as ValidIllustration } from './ValidIllustration';
+export { default as SplashSvg } from './SplashSvg';
+export { default as BackSvg } from './svgviewer-react-native-output';
+export { default as PPBackgroundSvg } from './PPBackgroundSvg';

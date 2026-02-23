@@ -20,6 +20,7 @@ const LoginScreen = ({ navigation }: any) => {
   const { isLoading, login } = useContext(AuthContext);
   const [btnLoading, setBtnLoading] = useState(false);
   const { loadProfile } = useAuthCheck();
+  
   useEffect(() => {
     loadRememberedUser()
   }, []);

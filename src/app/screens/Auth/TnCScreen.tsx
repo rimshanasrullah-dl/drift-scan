@@ -4,17 +4,20 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { styles } from '../../components/AuthComponents/PpStyles';
 import { termsData } from '../../components/AuthComponents/DataFile';
 import { renderTextWithBoldEmail } from '../../../share/utility/HelperFunctions';
-import { BackBtnSvg } from '../../assets/svgs';
+import { AuthBackgroundSvg, BackBtnSvg, PPBackgroundSvg } from '../../assets/svgs';
 import NetworkWrapper from '../../components/baseComponents/NetworkWrapper';
-
-
-const BG_MAIN = require('../../assets/pngs/BackgroundImag3.png');
+   
+//
+const BG_MAIN = require('../../assets/pngs/bgMain.png');
 const TnCScreen = ({ navigation }: any) => {
  const insets = useSafeAreaInsets();
   return (
     <View style={styles.cardContainer}>
         <NetworkWrapper>
          <ImageBackground source={BG_MAIN} style={styles.outerBackground} >
+            <View style={styles.svgBackground} pointerEvents="none">
+            <PPBackgroundSvg />
+          </View>
           <SafeAreaView style={styles.safeArea}>
               <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <BackBtnSvg />

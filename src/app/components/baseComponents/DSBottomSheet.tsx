@@ -132,7 +132,6 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: '500',
         color: '#000',
         fontFamily: AppFonts.SemiBold
     },

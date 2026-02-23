@@ -1,17 +1,20 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import AppColors from '../../../share/constants/AppColors';
+import AppFonts from '../../../share/constants/AppFonts';
 
 interface PermissionModalProps {
   visible: boolean;
   onOpenSettings: () => void;
   onDeny: () => void;
+  onAllow?: () => void;
 }
 
 export const PermissionModal = ({
   visible,
   onOpenSettings,
-  onDeny
+  onDeny,
+  onAllow,
 }: PermissionModalProps) => {
   return (
     <Modal
@@ -24,9 +27,9 @@ export const PermissionModal = ({
       <TouchableWithoutFeedback style={{ flex: 1, }} onPress={onDeny}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.title}>Camera Permission Needed</Text>
+            <Text style={styles.title}>Camera Access</Text>
             <Text style={styles.message}>
-              Drift Scan needs camera access to scan QR codes. Please enable it in your phone settings
+              Drift Scan likes to access your camera to scan QR codes for parking allocation.
             </Text>
 
             <View style={styles.buttonContainer}>
@@ -34,14 +37,14 @@ export const PermissionModal = ({
                 style={[styles.button, styles.denyButton]}
                 onPress={onDeny}
               >
-                <Text style={styles.denyText}>Don't Use</Text>
+                <Text style={styles.denyText}>Don't Allow</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={[styles.button, styles.allowButton]}
-                onPress={onOpenSettings}
+                onPress={onAllow || onOpenSettings}
               >
-                <Text style={styles.allowText}>Go to Settings</Text>
+                <Text style={styles.allowText}>Allow</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -74,7 +77,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: AppFonts.Bold,
     marginBottom: 12,
     color: '#000',
   },
@@ -107,10 +110,10 @@ const styles = StyleSheet.create({
   },
   denyText: {
     color: '#333',
-    fontWeight: '600',
+    fontFamily: AppFonts.SemiBold,
   },
   allowText: {
     color: 'white',
-    fontWeight: '600',
+    fontFamily: AppFonts.SemiBold,
   },
 });

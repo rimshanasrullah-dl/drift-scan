@@ -46,10 +46,11 @@ export const privacyData = [
   {
     id: '5',
     title: '5. Data Deletion & User Rights',
-    content: 'You may request deletion of your account or staff profiles by emailing support@driftapp.com.',
+    // content: 'Users may delete their account from the profile section by selecting a reason and confirming the request. Upon confirmation, the account will be deactivated and access will be permanently disabled.',
     bullets: [
-      'Requests are processed within 30 days',
-      'Some data may remain anonymized for legal, security, or audit purposes',
+     'Users may delete their account from the profile section by selecting a reason and confirming the request.',
+      'Upon confirmation, the account will be deactivated and access will be permanently disabled.',
+      'User data will be anonymized and retained for up to 30 days for legal and compliance purposes, after which it will be permanently removed from active systems.',
     ],
   },
   {
@@ -181,11 +182,12 @@ export const termsData = [
   {
     id: '13',
     title: '13. Data Deletion & User Rights',
-    content: 'Security personnel or restaurants may request deletion of their accounts by emailing support@driftapp.com.',
+    // content: 'Users may delete their account from the profile section by selecting a reason and confirming the request. Upon confirmation, the account will be deactivated and access will be permanently disabled.',
     bullets: [
-      'Requests are processed within 30 days.',
-      'Some data may remain in anonymized form for legal and analytics purposes.',
-    ],
+     'Users may delete their account from the profile section by selecting a reason and confirming the request.',
+      'Upon confirmation, the account will be deactivated and access will be permanently disabled.',
+      'User data will be anonymized and retained for up to 30 days for legal and compliance purposes, after which it will be permanently removed from active systems.',
+   ],
   },
   {
     id: '14',

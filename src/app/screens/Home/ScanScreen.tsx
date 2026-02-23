@@ -7,8 +7,9 @@ import {
   useCodeScanner,
   useCameraPermission
 } from 'react-native-vision-camera';
-import { BackBtnSvg } from '../../assets/svgs';
-import { DSButton } from '../../components/baseComponents';
+import {
+  LoaderKitView,
+} from 'react-native-loader-kit';
 import ScreenWrapper from '../../components/HomeComponents/ScreenWrapper';
 import AppColors from '../../../share/constants/AppColors';
 import AppFonts from '../../../share/constants/AppFonts';
@@ -20,8 +21,8 @@ import { useUser } from '../../../share/features/context/UserContext';
 
 const ScanScreen = ({ navigation }: any) => {
   const device = useCameraDevice('back');
-   const { userDetail ,loading}: any = useUser();
-  const { hasPermission,  } = useCameraPermission();
+  const { userDetail, loading }: any = useUser();
+  const { hasPermission, } = useCameraPermission();
   const isFocused = useIsFocused();
   const [isloading, setLoading] = useState(false);
   const [isScanned, setIsScanned] = useState(false);
@@ -29,7 +30,6 @@ const ScanScreen = ({ navigation }: any) => {
 
   // Animation for scan line
   const scanLinePosition = useRef(new Animated.Value(0)).current;
-
   useEffect(() => {
     const animateScanLine = () => {
       Animated.loop(
@@ -79,8 +79,9 @@ const ScanScreen = ({ navigation }: any) => {
         text1: err.message,
       });
       // setTimeout(() => {
-        setIsScanned(false); 
-        isProcessing.current = false; 
+      setIsScanned(false);
+      isProcessing.current = false;
+      navigation.navigate('Home')
       // }, 1000);
 
     } finally {
@@ -105,9 +106,9 @@ const ScanScreen = ({ navigation }: any) => {
           // navigation.replace("SlotDetailScreen")
         }, 1000);
       }
-      else{
-          isProcessing.current = false;
-         setIsScanned(false); 
+      else {
+        isProcessing.current = false;
+        setIsScanned(false);
       }
     }
   });
@@ -126,28 +127,35 @@ const ScanScreen = ({ navigation }: any) => {
   }
 
   return (
-    <ScreenWrapper headerContent={<HeaderContent headerTitle={loading ? 'loading....' :userDetail?.restaurant_name} />}>
+    <ScreenWrapper headerContent={<HeaderContent headerTitle={loading ? 'loading....' : userDetail?.restaurant_name} />}>
       <View style={styles.whiteBackground}>
         {isProcessing?.current || isloading ?
           <View style={[styles.scanFrameContainer, { gap: 50 }]}>
             <View style={{ marginHorizontal: 60 }}>
-              <Text style={[styles.instructionText, { fontSize: 20, fontWeight: 'bold' }]}>
+              <Text style={[styles.instructionText, { fontSize: 20, fontFamily: AppFonts.Bold }]}>
                 Verifying QR Code
               </Text>
               <Text style={[styles.instructionText, { fontSize: 16, marginTop: 10 }]}>
-                Checking against The Fancy Delight
+                Checking against {userDetail?.restaurant_name}
               </Text>
+             
             </View>
 
-            <ActivityIndicator
+            {/* <ActivityIndicator
               size="large"
               color={AppColors.THEME_BEIGE}
               style={{ transform: [{ scale: 2 }], opacity: 1, marginTop: 20 }}
-            />
+            /> */}
+              <LoaderKitView
+                style={{ width: 50, height: 50 }}
+                name={'LineSpinFadeLoader'}
+                animationSpeedMultiplier={1.0} 
+                color={AppColors.THEME_GREEN} 
+              />
           </View>
           :
           <View style={styles.scanFrameContainer}>
-            {/* Camera positioned within the scan frame */}
+         
             {device && (
               <View style={styles.cameraContainer}>
                 <View style={{ margin: 10 }}>
@@ -159,7 +167,7 @@ const ScanScreen = ({ navigation }: any) => {
                   />
                 </View>
 
-                {/* --- Corner Brackets (Using SVG for perfect roundness) --- */}
+                {/* --- Corner Brackets --- */}
 
                 {/* Top Left */}
                 <View style={[styles.cornerBase, styles.cornerTopLeft]}>
@@ -174,7 +182,7 @@ const ScanScreen = ({ navigation }: any) => {
                   </Svg>
                 </View>
 
-                {/* Top Right (Rotated 90 deg) */}
+                {/* Top Right  */}
                 <View style={[styles.cornerBase, styles.cornerTopRight]}>
                   <Svg width="100%" height="100%" viewBox="0 0 60 60" fill="none">
                     <Path
@@ -187,7 +195,7 @@ const ScanScreen = ({ navigation }: any) => {
                   </Svg>
                 </View>
 
-                {/* Bottom Left (Rotated -90 deg) */}
+                {/* Bottom Left */}
                 <View style={[styles.cornerBase, styles.cornerBottomLeft]}>
                   <Svg width="100%" height="100%" viewBox="0 0 60 60" fill="none">
                     <Path
@@ -200,7 +208,7 @@ const ScanScreen = ({ navigation }: any) => {
                   </Svg>
                 </View>
 
-                {/* Bottom Right (Rotated 180 deg) */}
+                {/* Bottom Right  */}
                 <View style={[styles.cornerBase, styles.cornerBottomRight]}>
                   <Svg width="100%" height="100%" viewBox="0 0 60 60" fill="none">
                     <Path
@@ -231,6 +239,7 @@ const ScanScreen = ({ navigation }: any) => {
             )}
 
             <View style={{ marginHorizontal: 60, marginTop: 50 }}>
+             
               <Text style={styles.instructionText}>
                 Scan the customer's order QR code to allocate parking.
               </Text>
@@ -367,7 +376,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: AppColors.THEME_GREEN,
     fontFamily: AppFonts.SemiBold,
-    fontWeight: '600',
     fontSize: 16,
     textAlign: 'center',
     lineHeight: 22,

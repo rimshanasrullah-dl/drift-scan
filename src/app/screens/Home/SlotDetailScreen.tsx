@@ -41,14 +41,14 @@ const SlotDetailScreen = ({ navigation, route }: any) => {
                     <DSButton
                         label="Scan Another Code"
                         variant="filled"
-                        onPress={() => navigation.navigate("ScanScreen")} 
+                        onPress={() => navigation.replace("ScanScreen")} 
                     />
 
                    
                     <DSButton
                         label="Back to Home"
                         variant="outlined" 
-                        onPress={() => navigation.navigate("Home")} 
+                        onPress={() => navigation.replace("Home")} 
 
 
                     />

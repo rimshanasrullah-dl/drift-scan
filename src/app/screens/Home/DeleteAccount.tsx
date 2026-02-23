@@ -26,6 +26,7 @@ const DeleteAccount = ({ navigation }: any) => {
     const [error, setError] = useState('');
     const sheetRef = useRef<BottomSheet>(null);
     const handleOpenModal = () => {
+        Keyboard.dismiss();
         sheetRef.current?.expand();
     };
    
