@@ -1,9 +1,9 @@
-
 const AppColors = {
-  THEME_GREEN:'#173E20',
-  THEME_BEIGE:'#C2A15A',
+  THEME_GREEN: '#173E20',
+  THEME_BEIGE: '#C2A15A',
   DARK_GREEN: '#144D33',
   BEIGE: '#C2A15A',
+  GOLDEN: '#D4A056',
   LIGHT_BEIGE: '#f7f3e9',
   PRIMARY_TEXT: '#2C2C2E',
   SECONDARY_TEXT: '#4C4D51',
@@ -11,6 +11,11 @@ const AppColors = {
   LIGHT_GRAY: '#999999',
   BORDER_LIGHT: '#EEEEEE',
   ALERT_RED: '#FF0000',
+  DISABLED: '#ccc',
+  WHITE: '#FFF',
+  BORDER: '#E8E8E8',
+  CHARCOAL: '#333',
+  BLACK: '#000',
 };
 
 export default AppColors;

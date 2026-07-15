@@ -1,6 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Keyboard } from 'react-native';
-import { emailRegex, validateLoginFields } from '../../../share/core/Validators';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Keyboard,
+} from 'react-native';
+import {
+  emailRegex,
+  validateLoginFields,
+} from '../../../share/core/Validators';
 import AuthLayout from '../../components/AuthComponents/AuthLayout';
 import { DSButton, DSInput } from '../../components/baseComponents';
 import { AdvancedCheckbox } from 'react-native-advanced-checkbox';
@@ -9,7 +18,12 @@ import AppColors from '../../../share/constants/AppColors';
 import AppFonts from '../../../share/constants/AppFonts';
 import PrivacyView from '../../components/AuthComponents/PrivacyView';
 import { AuthContext } from '../../../share/features/context/AuthContext';
-import { _saveItem, clearUser, getUserSecurely, saveUserSecurely } from '../../../share/utility/KeyValueStorage';
+import {
+  _saveItem,
+  clearUser,
+  getUserSecurely,
+  saveUserSecurely,
+} from '../../../share/utility/KeyValueStorage';
 import { api } from '../../../share/core/api';
 import { useAuthCheck } from '../../../share/hooks/useAuthCheck';
 
@@ -20,15 +34,15 @@ const LoginScreen = ({ navigation }: any) => {
   const { isLoading, login } = useContext(AuthContext);
   const [btnLoading, setBtnLoading] = useState(false);
   const { loadProfile } = useAuthCheck();
-  
+
   useEffect(() => {
-    loadRememberedUser()
+    loadRememberedUser();
   }, []);
 
   const handleUserInput = (val: any, type: string) => {
-    setUserDetails((prev) => ({
+    setUserDetails(prev => ({
       ...prev,
-      [type]: val
+      [type]: val,
     }));
 
     if (type === 'email') {
@@ -40,66 +54,78 @@ const LoginScreen = ({ navigation }: any) => {
 
   const loadRememberedUser = async () => {
     try {
-      const savedUser = await getUserSecurely()
+      const savedUser = await getUserSecurely();
       // console.log("rememUser==", savedUser)
       if (savedUser) {
-        setUserDetails({ email: savedUser.email, password: savedUser.password })
+        setUserDetails({
+          email: savedUser.email,
+          password: savedUser.password,
+        });
         setRememberMe(true);
       }
     } catch (err) {
-      console.log("Error loading remembered user", err);
+      console.log('Error loading remembered user', err);
     }
-  }
+  };
 
   const LoginFun = async () => {
-    setBtnLoading(true)
+    setBtnLoading(true);
 
     const payload = {
-      "email": userDetails.email,
-      "password": userDetails.password,
-      "role": "parking",
-
-    }
+      email: userDetails.email,
+      password: userDetails.password,
+      role: 'parking',
+    };
     try {
       let response: any = await await api.post('/customer-login', payload);
       let obj = {
         content: response?.content,
-        user: response?.user
-      }
+        user: response?.user,
+      };
       if (!response?.user?.email_verified_at) {
         let data = {
           token: response?.content?.token,
-          customer_details: response?.user
-        }
+          customer_details: response?.user,
+        };
         let obj = {
           ...userDetails,
-          rememberMe: rememberMe
-        }
-        navigation.navigate('EmailVerification', { data: data, userDetails: obj })
-      }
-
-      else {
-
+          rememberMe: rememberMe,
+        };
+        navigation.navigate('EmailVerification', {
+          data: data,
+          userDetails: obj,
+        });
+      } else {
         if (rememberMe) {
-          await saveUserSecurely(userDetails)
+          await saveUserSecurely(userDetails);
         } else {
-          await clearUser()
+          await clearUser();
         }
-        await loadProfile(response?.content?.token, obj)
-        login(response?.content?.token)
-        await _saveItem("userData", response)
+        await loadProfile(response?.content?.token, obj);
+        login(response?.content?.token);
+        await _saveItem('userData', response);
 
-        setUserDetails({ email: '', password: '' })
-
+        setUserDetails({ email: '', password: '' });
       }
     } catch (e: any) {
+      if (e?.isTimeout) {
+        return;
+      }
       if (e?.messages) {
-        const emailError = Array.isArray(e?.messages?.email) ? e?.messages?.email[0] : e?.messages?.email;
-        let passError = Array.isArray(e?.messages?.password) ? e?.messages?.password[0] : e?.messages?.password;
-        let genErr = e?.messages
-        setError({ ...error, emailErr: emailError, passErr: passError || genErr });
+        const emailError = Array.isArray(e?.messages?.email)
+          ? e?.messages?.email[0]
+          : e?.messages?.email;
+        let passError = Array.isArray(e?.messages?.password)
+          ? e?.messages?.password[0]
+          : e?.messages?.password;
+        let genErr = e?.messages;
+        setError({
+          ...error,
+          emailErr: emailError,
+          passErr: passError || genErr,
+        });
       } else {
-        console.log("Error", e.message)
+        console.log('Error', e.message);
         setError({ ...error, passErr: e.message });
       }
     } finally {
@@ -107,38 +133,32 @@ const LoginScreen = ({ navigation }: any) => {
     }
   };
 
-
   const handleLogin = async () => {
-    Keyboard.dismiss()
-    const { valid, emailErr, passErr } = validateLoginFields(userDetails.email, userDetails.password);
+    Keyboard.dismiss();
+    const { valid, emailErr, passErr } = validateLoginFields(
+      userDetails.email,
+      userDetails.password,
+    );
 
     if (!valid) {
       setError({ ...error, emailErr: emailErr, passErr: passErr });
       return;
     }
-    LoginFun()
-
+    LoginFun();
   };
 
   return (
-    <AuthLayout
-      title="Login"
-      subtitle="to your existing account"
-      cardHeight
-    >
-
+    <AuthLayout title="Login" subtitle="to your existing account" cardHeight>
       <DSInput
-
         placeholder="Email Address"
         iconName={<EmailSvg />}
         value={userDetails.email}
         onChangeText={(text: any) => handleUserInput(text, 'email')}
         error={error.emailErr}
-        autoCapitalize='none'
+        autoCapitalize="none"
       />
 
       <DSInput
-
         placeholder="Password"
         iconName={<PasswordSvg />}
         password
@@ -153,17 +173,19 @@ const LoginScreen = ({ navigation }: any) => {
           value={rememberMe}
           onValueChange={() => setRememberMe(!rememberMe)}
           label="Remember me"
-          checkedColor="#173E20"
-          uncheckedColor="#ccc"
+          checkedColor={AppColors.THEME_GREEN}
+          uncheckedColor={AppColors.DISABLED}
           size={20}
           checkMarkContent={<CheckboxTick />}
           labelStyle={styles.rememberText}
         />
 
-        <TouchableOpacity onPress={() =>{
-            Keyboard.dismiss()
-          navigation.navigate('ForgotPasswordScreen')
-        }}>
+        <TouchableOpacity
+          onPress={() => {
+            Keyboard.dismiss();
+            navigation.navigate('ForgotPasswordScreen');
+          }}
+        >
           <Text style={styles.rememberText}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
@@ -174,29 +196,25 @@ const LoginScreen = ({ navigation }: any) => {
         label="Login"
         variant="filled"
         onPress={handleLogin}
-        style={{ marginTop: 20 }}
+        style={styles.btn}
         loading={isLoading || btnLoading}
       />
-
-
-
-
     </AuthLayout>
   );
 };
 
 const styles = StyleSheet.create({
   whiteInput: {
-    backgroundColor: '#FFF',
+    backgroundColor: AppColors.WHITE,
     borderWidth: 1,
-    borderColor: '#E8E8E8',
+    borderColor: AppColors.BORDER,
   },
   rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
-    paddingHorizontal: 5
+    paddingHorizontal: 5,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -210,16 +228,16 @@ const styles = StyleSheet.create({
     // fontFamily:AppFonts.Bold
   },
   linkText: {
-    color: '#333',
+    color: AppColors.CHARCOAL,
     fontSize: 12,
     textDecorationLine: 'underline',
   },
   errorText: {
-    color: 'red',
+    color: AppColors.ALERT_RED,
     textAlign: 'center',
     marginTop: 5,
   },
-
+  btn: { marginTop: 20 },
 });
 
 export default LoginScreen;

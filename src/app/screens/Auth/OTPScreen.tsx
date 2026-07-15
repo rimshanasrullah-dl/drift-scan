@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Keyboard } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Keyboard,
+} from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 import AuthLayout from '../../components/AuthComponents/AuthLayout';
 import { DSButton } from '../../components/baseComponents';
 import AppColors from '../../../share/constants/AppColors';
-import { getDubaiDate, parseExpiryTime } from '../../../share/core/TimerFunctions';
+import {
+  getDubaiDate,
+  parseExpiryTime,
+} from '../../../share/core/TimerFunctions';
 import Toast from 'react-native-toast-message';
 import AppFonts from '../../../share/constants/AppFonts';
 import { api } from '../../../share/core/api';
@@ -20,13 +30,13 @@ const OtpScreen = ({ navigation, route }: any) => {
   const [timer, setTimer] = useState(60);
   const [expires_at, setExpiresAt] = useState(expiryFromApi);
 
-useEffect(() => {
+  useEffect(() => {
     // If timer is at 0, stop the countdown
     if (timer == 0) return;
 
     // Save intervalId to clear it later
     const intervalId = setInterval(() => {
-      setTimer((prevTime) => prevTime - 1);
+      setTimer(prevTime => prevTime - 1);
     }, 1000);
 
     // clear interval on re-render or unmount
@@ -36,21 +46,17 @@ useEffect(() => {
   // useEffect(() => {
   //   if (!expires_at) return;
 
-
   //   const expiryTime: any = parseExpiryTime(expires_at);
-
 
   //   if (!expiryTime || isNaN(expiryTime.getTime())) {
   //     setTimer("00:00");
   //     return;
   //   }
 
-
   //   const interval = setInterval(() => {
   //     // Ensure getDubaiDate() returns a JS Date object
   //     const now: any = getDubaiDate();
   //     const diff = expiryTime - now;
-
 
   //     if (diff <= 0) {
   //       setTimer("00:00");
@@ -58,27 +64,22 @@ useEffect(() => {
   //       return;
   //     }
 
-
   //     // Calculate Hours, Minutes, Seconds
   //     const hours = Math.floor(diff / (1000 * 60 * 60));
   //     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   //     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
 
   //     // Format Logic
   //     const hDisplay = hours > 0 ? `${hours.toString().padStart(2, "0")}:` : "";
   //     const mDisplay = minutes.toString().padStart(2, "0");
   //     const sDisplay = seconds.toString().padStart(2, "0");
 
-
   //     setTimer(`${hDisplay}${mDisplay}:${sDisplay}`);
 
   //   }, 1000);
 
-
   //   return () => clearInterval(interval);
   // }, [expires_at]);
-
 
   const handleResendOTP = async () => {
     if (!email) {
@@ -89,36 +90,30 @@ useEffect(() => {
       return;
     }
 
+    try {
+      const response = await ForgetPasswordApi(email);
 
-       try {
-         const response = await ForgetPasswordApi(email);
-
-
-         if (response?.content) {
-          setTimer(60)
-           setExpiresAt(response?.content?.expires_at)
-          //  setNewToken(response?.content?.token)
-         }
-
-       } catch (error) {
-         Toast.show({
-           type: 'error',
-           text1: 'Something went wrong while resending OTP.',
-         });
-
-
-       }
+      if (response?.content) {
+        setTimer(60);
+        setExpiresAt(response?.content?.expires_at);
+        //  setNewToken(response?.content?.token)
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Something went wrong while resending OTP.',
+      });
+    }
   };
-
 
   const handleVerifyOTP = async (otp: any) => {
     if (otp?.length == 0) {
-      setOtpErr("Please enter OTP")
-      return
+      setOtpErr('Please enter OTP');
+      return;
     }
     if (otp?.length < 4) {
-      setOtpErr("Please enter correct OTP")
-      return
+      setOtpErr('Please enter correct OTP');
+      return;
     }
 
     try {
@@ -129,40 +124,30 @@ useEffect(() => {
       };
       setLoading(true);
 
-      const response: any = await api.post("/verify-otp", payload, { requiresAuth: false });
+      const response: any = await api.post('/verify-otp', payload, {
+        requiresAuth: false,
+      });
       if (response) {
         Toast.show({
           type: 'success',
           text1: response?.detail,
         });
-        console.log("res in otp generation", response)
-          Keyboard.dismiss()
-        navigation.replace('ResetPasswordScreen', { data: params })
-      }
-      else {
-        setOtpErr('Error in otp generation')
-        console.log("Error in otp generation", response)
+        console.log('res in otp generation', response);
+        Keyboard.dismiss();
+        navigation.replace('ResetPasswordScreen', { data: params });
+      } else {
+        setOtpErr('Error in otp generation');
+        console.log('Error in otp generation', response);
       }
       return response;
     } catch (error: any) {
-
-
-      setOtpErr(error?.message)
-      console.log("Catch Error in otp generation", error)
+      setOtpErr(error?.message);
+      console.log('Catch Error in otp generation', error);
       setLoading(false);
     } finally {
       setLoading(false);
     }
-
-
-
-
-
-
-  }
-
-
-
+  };
 
   return (
     <AuthLayout
@@ -172,35 +157,49 @@ useEffect(() => {
       onBackPress={() => navigation.goBack()}
     >
       <View style={styles.otpContainer}>
-
         <OtpInput
           numberOfDigits={4}
-          focusColor={otpErr ? 'red' : AppColors.THEME_GREEN}
+          focusColor={otpErr ? AppColors.ALERT_RED : AppColors.THEME_GREEN}
           autoFocus={true}
           placeholder=""
           blurOnFilled={true}
           type="numeric"
           focusStickBlinkingDuration={500}
           onTextChange={(text: any) => {
-            setOtpErr('')
-            setOtp(text)
+            setOtpErr('');
+            setOtp(text);
           }}
-          onFilled={(text) => handleVerifyOTP(text)}
+          onFilled={text => handleVerifyOTP(text)}
           theme={{
-            containerStyle: { paddingHorizontal: 30, paddingVertical: 10 },
-            pinCodeContainerStyle: { borderColor: otpErr ? 'red' : AppColors.THEME_BEIGE, borderWidth: 2, width: 55 },
+            containerStyle: styles.container,
+            pinCodeContainerStyle: {
+              borderColor: otpErr ? 'red' : AppColors.THEME_BEIGE,
+              borderWidth: 2,
+              width: 55,
+            },
           }}
           textProps={{
-            accessibilityRole: "text",
-            accessibilityLabel: "OTP digit",
+            accessibilityRole: 'text',
+            accessibilityLabel: 'OTP digit',
             allowFontScaling: true,
           }}
-
         />
-
       </View>
-      {otpErr ? <Text style={{ fontSize: 12, color: 'red', textAlign: 'center', marginVertical: 8, fontFamily: AppFonts.Regular }}>{otpErr}</Text> : <></>}
-
+      {otpErr ? (
+        <Text
+          style={{
+            fontSize: 12,
+            color: 'red',
+            textAlign: 'center',
+            marginVertical: 8,
+            fontFamily: AppFonts.Regular,
+          }}
+        >
+          {otpErr}
+        </Text>
+      ) : (
+        <></>
+      )}
 
       <DSButton
         label="Verify"
@@ -212,20 +211,18 @@ useEffect(() => {
       />
 
       <View style={styles.resendContainer}>
-        {timer ==0 ? (
+        {timer == 0 ? (
           <Text style={styles.resendLink}>
             Didn’t receive code?{' '}
             <Text
               onPress={handleResendOTP}
-              style={[styles.resendLink, { color: AppColors.THEME_GREEN , fontWeight: 'bold'}]}
+              style={[styles.resendLink, styles.resendText]}
             >
               Resend OTP
             </Text>
           </Text>
         ) : (
-          <Text style={styles.timerText}>
-          Resend code in : {timer}
-          </Text>
+          <Text style={styles.timerText}>Resend code in : {timer}</Text>
         )}
       </View>
     </AuthLayout>
@@ -247,15 +244,15 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderRadius: 8,
-    borderColor: '#D4A056', // Gold border from UI
-    backgroundColor: '#FFF',
+    borderColor: AppColors.GOLDEN,
+    backgroundColor: AppColors.WHITE,
   },
   activePinCodeContainer: {
     borderColor: '#1E3C2F',
   },
   pinCodeText: {
     fontSize: 20,
-    color: '#000',
+    color: AppColors.BLACK,
   },
   resendContainer: {
     marginTop: 20,
@@ -263,7 +260,7 @@ const styles = StyleSheet.create({
   },
   timerText: {
     marginBottom: 10,
-    color: '#333',
+    color: AppColors.CHARCOAL,
     fontWeight: '600',
   },
   row: {
@@ -272,7 +269,9 @@ const styles = StyleSheet.create({
   resendLink: {
     // fontWeight: 'bold',
     color: AppColors.THEME_GREEN,
-  }
+  },
+  resendText: { color: AppColors.THEME_GREEN, fontWeight: 'bold' },
+  container: { paddingHorizontal: 30, paddingVertical: 10 },
 });
 
 export default OtpScreen;
